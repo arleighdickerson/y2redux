@@ -68,12 +68,14 @@ class SiteController extends IsomorphicController {
      * Displays homepage.
      */
     public function actionIndex() {
+        $this->view->title = 'Welcome to Y2Redux';
     }
 
     /**
      * Displays example counter component
      */
     public function actionCounter() {
+        $this->view->title = 'Y2Redux Component Example';
     }
 
     /**
