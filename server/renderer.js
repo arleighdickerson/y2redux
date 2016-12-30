@@ -1,5 +1,5 @@
 require('babel-register')()
-require('ignore-styles').default(['.scss', '.sass', '.css'])
+require('ignore-styles').default(['.scss', '.sass', '.css','.less'])
 
 const config = require('../config')
 Object.assign(global, config.globals)
