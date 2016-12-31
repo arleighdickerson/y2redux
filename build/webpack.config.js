@@ -38,6 +38,16 @@ webpackConfig.entry = {
     ? [APP_ENTRY].concat(`webpack-hot-middleware/client?path=${config.compiler_public_path}__webpack_hmr`)
     : [APP_ENTRY],
   vendor: config.compiler_vendors,
+  fonts: [
+    'open-sans-fontface',
+    'roboto-fontface',
+    paths.client('styles/fonts/toolkit-entypo.eot'),
+    paths.client('styles/fonts/toolkit-entypo.ttf'),
+    paths.client('styles/fonts/toolkit-entypo.woff'),
+    paths.client('styles/fonts/toolkit-entypo.woff2'),
+    paths.client('styles/toolkit.less'),
+    paths.client('styles/application.less')
+  ]
 }
 
 // ------------------------------------
@@ -53,12 +63,12 @@ webpackConfig.output = {
 // Plugins
 // ------------------------------------
 webpackConfig.plugins = [
-  new CleanPlugin(['frontend/runtime/webpack/index.html', 'frontend/web/assets'], {
+  new CleanPlugin(['frontend/runtime/webpack/index.html'], {
       root: paths.base(),
       exclude: ['.gitignore']
     }
   ),
-  new WriteFilePlugin(),
+  new WriteFilePlugin({log:false}),
   new webpack.DefinePlugin(config.globals),
   new HtmlWebpackPlugin({
     template: paths.client('index.html'),
@@ -106,7 +116,7 @@ if (__DEV__) {
 if (!__TEST__) {
   webpackConfig.plugins.push(
     new webpack.optimize.CommonsChunkPlugin({
-      names: ['vendor'],
+      names: ['vendor','fonts'],
     })
   )
 }
@@ -117,7 +127,11 @@ if (!__TEST__) {
 // JavaScript / JSON
 webpackConfig.module.loaders.push({
   test: /\.(js|jsx)$/,
-  exclude: [config.utils_paths.base('node_modules')],
+  exclude: [
+    /(node_modules)/,
+    paths.base('node_modules'),
+    paths.client('static'),
+  ],
   loader: 'babel',
   query: config.compiler_babel
 }, {
@@ -162,10 +176,6 @@ webpackConfig.module.loaders.push({
   ]
 })
 
-webpackConfig.sassLoader = {
-  includePaths: paths.client('styles')
-}
-
 webpackConfig.postcss = [
   cssnano({
     autoprefixer: {
@@ -205,7 +215,7 @@ webpackConfig.module.loaders.push(
   },
   {
     test: /\.eot(\?.*)?$/,
-    loader: 'file-loader?name=fonts/[name].[ext]'
+    loader: 'file-loader?name=fonts/[name].[ext]&limit=10000&mimetype=application/vnd.ms-fontobject'
   },
   {
     test: /\.svg(\?.*)?$/,

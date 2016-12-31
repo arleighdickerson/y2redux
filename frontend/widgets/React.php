@@ -31,7 +31,6 @@ class React extends Widget {
     }
 
     protected function getContent() {
-        $content = '';
         if (ArrayHelper::getValue(Yii::$app->params, 'isomorphic', false)) {
             $client = new Client($this->clientConfig);
             $response = $client->post('', [
@@ -48,8 +47,9 @@ class React extends Widget {
                     Yii::error($message, 'react');
                 }
             }
+            return $response->getContent();
         }
-        return $content;
+        return '';
     }
 
     protected static function defaultClientConfig() {

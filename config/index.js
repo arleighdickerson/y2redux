@@ -38,7 +38,7 @@ const config = {
   compiler_devtool: null,
   compiler_hash_type: 'hash',
   compiler_fail_on_warning: false,
-  compiler_quiet: false,
+  compiler_quiet: true,
   compiler_public_path: '/assets/',
   compiler_stats: {
     chunks: false,
