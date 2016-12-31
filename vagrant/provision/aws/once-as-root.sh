@@ -16,16 +16,15 @@ function info {
 
 info "Provision-script user: `whoami`"
 
+chown -R ubuntu /app
+chgrp -R ubuntu /app
+
 info "Allocate swap for MySQL 5.6"
 fallocate -l 2048M /swapfile
 chmod 600 /swapfile
 mkswap /swapfile
 swapon /swapfile
 echo '/swapfile none swap defaults 0 0' >> /etc/fstab
-
-info "Allocate moar file watchers"
-echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
-sysctl --system
 
 info "Configure locales"
 update-locale LC_ALL="C"
@@ -42,45 +41,39 @@ echo "Done!"
 
 info "Update OS software"
 apt-get update
-apt-get upgrade -y
+info "Skipping OS software update"
 
 info "Install additional software"
-apt-get install -y git php5-curl php5-cli php5-intl php5-mysqlnd php5-gd php5-fpm nginx mysql-server-5.6 php5-xdebug #npm
+apt-get install -y git php5-curl php5-cli php5-intl php5-mysqlnd php5-gd php5-fpm nginx mysql-server-5.6 npm
 
-#info "Add latest node mirror"
-#curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
+info "Link legacy node"
+ln -s /usr/bin/nodejs /usr/bin/node
 
-#info "Install latest node"
-#apt-get install -y nodejs
+info "Install nodemon"
+npm install -g nodemon
 
-#info "Link legacy node"
-#ln -s /usr/bin/nodejs /usr/bin/node
-
-#info "Install nodemon"
-#npm install -g nodemon
-
-#info "Update npm"
-#npm install -g npm
+info "Update npm"
+npm install -g npm
 
 info "Configure MySQL"
 sed -i "s/.*bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/my.cnf
 echo "Done!"
 
 info "Configure PHP-FPM"
-sed -i 's/user = www-data/user = vagrant/g' /etc/php5/fpm/pool.d/www.conf
-sed -i 's/group = www-data/group = vagrant/g' /etc/php5/fpm/pool.d/www.conf
-sed -i 's/owner = www-data/owner = vagrant/g' /etc/php5/fpm/pool.d/www.conf
+sed -i 's/user = www-data/user = ubuntu/g' /etc/php5/fpm/pool.d/www.conf
+sed -i 's/group = www-data/group = ubuntu/g' /etc/php5/fpm/pool.d/www.conf
+sed -i 's/owner = www-data/owner = ubuntu/g' /etc/php5/fpm/pool.d/www.conf
 echo "Done!"
 
 info "Configure NGINX"
-sed -i 's/user www-data/user vagrant/g' /etc/nginx/nginx.conf
+sed -i 's/user www-data/user ubuntu/g' /etc/nginx/nginx.conf
 echo "Done!"
 
 info "Enabling site configuration"
-ln -s /app/vagrant/nginx/app.conf /etc/nginx/sites-enabled/app.conf
+ln -s /app/vagrant/nginx/aws.conf /etc/nginx/sites-enabled/app.conf
 echo "Done!"
 
-info "Initailize databases for MySQL"
+info "Initialize databases for MySQL"
 mysql -uroot <<< "CREATE DATABASE y2redux"
 mysql -uroot <<< "CREATE DATABASE y2redux_test"
 echo "Done!"
@@ -88,18 +81,14 @@ echo "Done!"
 info "Install composer"
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-info "Configure XDEBUG"
-echo "xdebug.remote_enable=1
-xdebug.default_enable=1
-xdebug.profiler_enable=1
-xdebug.remote_handler=dbgp
-xdebug.remote_autostart=1
-xdebug.remote_host=10.0.2.2
-xdebug.max_nesting_level=256
-" >> /etc/php5/mods-available/xdebug.ini
-
-echo "xdebug.idekey=CLI" >> /etc/php5/cli/php.ini
-echo "xdebug.idekey=FPM" >> /etc/php5/fpm/php.ini
-
 sed --in-place '/session.save_handler/d' /etc/php5/fpm/php.ini
-sed --in-place 's/sendfile\ on/sendfile\ off/g' /etc/nginx/nginx.conf
+
+rm -rf /usr/share/nginx/html
+ln -s /app/frontend/web /usr/share/nginx/html
+rm /etc/nginx/sites-enabled/default
+
+info "Add latest node mirror"
+curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
+
+info "Install latest node"
+apt-get install -y nodejs

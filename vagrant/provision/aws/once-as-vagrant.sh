@@ -16,6 +16,7 @@ function info {
 
 info "Provision-script user: `whoami`"
 
+
 info "Configure composer"
 composer config --global github-oauth.github.com ${github_token}
 echo "Done!"
@@ -25,15 +26,22 @@ composer global require "fxp/composer-asset-plugin:^1.2.0" --no-progress
 
 info "Install codeception"
 composer global require "codeception/codeception=2.0.*" "codeception/specify=*" "codeception/verify=*" --no-progress
-echo 'export PATH=/home/vagrant/.config/composer/vendor/bin:$PATH' | tee -a /home/vagrant/.profile
+echo 'export PATH=/home/ubuntu/.config/composer/vendor/bin:$PATH' | tee -a /home/ubuntu/.profile
 
 info "Install composer dependencies"
 cd /app
-composer --no-progress --prefer-dist install
 
-#info "Install npm dependencies"
-#cd /app
-#npm install
+mkdir -p frontend/runtime
+chmod 777 frontend/runtime
+mkdir -p backend/runtime
+chmod 777 backend/runtime
+mkdir -p console/runtime
+chmod 777 console/runtime
+mkdir -p frontend/web/assets
+chmod 755 frontend/web/assets
+mkdir -p backend/web/assets
+chmod 755 backend/web/assets
+composer --no-progress --prefer-dist --ignore-platform-reqs install
 
 info "Init project"
 ./init --env=Development --overwrite=y
@@ -41,14 +49,14 @@ info "Init project"
 info "Apply migrations"
 ./yii migrate <<< "yes"
 
-info "Create bash-alias 'app' for vagrant user"
-echo 'alias app="cd /app"' | tee /home/vagrant/.bash_aliases
-
 info "Enabling colorized prompt for guest console"
-sed -i "s/#force_color_prompt=yes/force_color_prompt=yes/" /home/vagrant/.bashrc
+sed -i "s/#force_color_prompt=yes/force_color_prompt=yes/" /home/ubuntu/.bashrc
 
 info "enable vi mode"
-echo "set -o vi" >> /home/vagrant/.bashrc
+echo "set -o vi" >> /home/ubuntu/.bashrc
 
 info "flush caches"
 ./yii cache/flush-all
+
+info "Install npm dependencies"
+npm install

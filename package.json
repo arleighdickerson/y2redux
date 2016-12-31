@@ -55,6 +55,7 @@
     "body-parser": "^1.15.2",
     "classnames": "^2.2.5",
     "clean-webpack-plugin": "^0.1.14",
+    "copy-webpack-plugin": "latest",
     "css-loader": "^0.26.1",
     "cssnano": "^3.7.4",
     "debug": "^2.2.0",
@@ -70,6 +71,7 @@
     "material-ui": "^0.16.0",
     "node-sass": "^4.1.1",
     "normalize.css": "^5.0.0",
+    "open-sans-fontface": "^1.4.0",
     "postcss-loader": "^1.1.0",
     "react": "^15.0.0",
     "react-bootstrap": "^0.30.7",
@@ -86,6 +88,7 @@
     "redux-thunk": "^2.0.0",
     "require-ensure": "^1.0.2",
     "rimraf": "^2.5.4",
+    "roboto-fontface": "^0.6.0",
     "sass-loader": "^4.0.0",
     "style-loader": "^0.13.1",
     "superagent": "^3.3.1",
@@ -96,10 +99,9 @@
     "validate.js": "^0.11.1",
     "webpack": "^1.12.14",
     "webpack-isomorphic-tools": "latest",
-    "write-file-webpack-plugin": "^3.4.1",
-    "yargs": "^6.3.0",
     "webpack-stats-plugin": "latest",
-    "copy-webpack-plugin": "latest"
+    "write-file-webpack-plugin": "^3.4.1",
+    "yargs": "^6.3.0"
   },
   "devDependencies": {
     "assets-webpack-plugin": "^3.5.0",
