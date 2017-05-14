@@ -2,7 +2,6 @@ import React from "react";
 import ReactDOM from "react-dom";
 import createStore from "./store/createStore";
 import AppContainer from "./containers/AppContainer";
-import injectTapEventPlugin from "react-tap-event-plugin";
 import {browserHistory as history} from "react-router";
 
 // =======================================================
@@ -15,8 +14,6 @@ const store = createStore(history, initialState)
 // Render Setup
 // ========================================================
 const MOUNT_NODE = document.getElementById('root')
-
-injectTapEventPlugin()
 
 let render = () => {
   const routes = require('./routes/index').default(store) //<-- NEEDS to be inside render function

@@ -22,8 +22,6 @@ const React = require('react');
 const ReactDOMServer = require('react-dom/server');
 const ReactRouter = require('react-router')
 
-const injectTapEventPlugin = require('react-tap-event-plugin')
-
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
@@ -51,7 +49,5 @@ app.use('/', function (req, res) {
     res.status(500).send(err.message + "\nSTACK [[[\n" + err.stack + "\n]]]\n");
   }
 });
-
-injectTapEventPlugin()
 
 app.listen(config.renderer_port);

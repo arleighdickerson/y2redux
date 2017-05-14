@@ -37,8 +37,7 @@ webpackConfig.entry = {
   app: __DEV__
     ? [APP_ENTRY].concat(`webpack-hot-middleware/client?path=${config.compiler_public_path}__webpack_hmr`)
     : [APP_ENTRY],
-  vendor: config.compiler_vendors,
-  fonts: [
+  vendor: config.compiler_vendors.concat([
     'open-sans-fontface',
     'roboto-fontface',
     paths.client('styles/fonts/toolkit-entypo.eot'),
@@ -47,7 +46,7 @@ webpackConfig.entry = {
     paths.client('styles/fonts/toolkit-entypo.woff2'),
     paths.client('styles/toolkit.less'),
     paths.client('styles/application.less')
-  ]
+  ])
 }
 
 // ------------------------------------
@@ -116,7 +115,7 @@ if (__DEV__) {
 if (!__TEST__) {
   webpackConfig.plugins.push(
     new webpack.optimize.CommonsChunkPlugin({
-      names: ['vendor','fonts'],
+      names: ['vendor'],
     })
   )
 }
