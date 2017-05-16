@@ -51,9 +51,7 @@ const config = {
     'react-router',
     'redux',
     'react-redux',
-    'material-ui',
-    'redux-form',
-    'redux-form-material-ui'
+    'redux-form'
   ],
 
   // ----------------------------------

@@ -1,6 +1,7 @@
-import React, {Component, PropTypes} from "react";
+import React, {Component} from "react";
 import {Provider} from "react-redux";
 import {Router} from "react-router";
+import PropTypes from 'prop-types'
 export default class AppContainer extends Component {
   static propTypes = {
     routes: PropTypes.object.isRequired,

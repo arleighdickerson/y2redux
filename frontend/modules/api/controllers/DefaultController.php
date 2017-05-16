@@ -51,14 +51,16 @@ class DefaultController extends Controller {
         return null;
     }
 
+    public function actionSignup(){
+    }
+
     public function actionLogin() {
         $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
+        if ($model->load(Yii::$app->request->post(),'') && $model->login()) {
             return Yii::$app->user->identity;
         }
         $res = Yii::$app->response;
         $res->statusCode = 422;
         $res->statusText = 'Authentication Failure';
-        return $res->send();
     }
 }

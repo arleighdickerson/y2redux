@@ -1,8 +1,14 @@
+const _ = require('lodash')
 import React from "react";
-import RaisedButton from "material-ui/RaisedButton";
-import {TextField} from "redux-form-material-ui";
-import {reduxForm, Field} from "redux-form";
+import {FormGroup as FG} from "react-bootstrap";
+import {Field, reduxForm} from "redux-form";
+import Input from "../../../components/Input";
+import {Link} from "react-router";
 
+function FormGroup(props) {
+  props = {...props, bsClass: 'form-group m-b-md'}
+  return <FG {...props}>{props.children}</FG>
+}
 const constraints = {
   username: {
     presence: true,
@@ -14,29 +20,47 @@ const constraints = {
 
 const validate = require('../../../util/validate')(constraints)
 
-export class LoginForm extends React.Component {
+class LoginForm extends React.Component {
   render() {
-    const {username, password, handleSubmit, pristine, submitting} = this.props;
+    const {username, password, submitting} = this.props;
     return (
-      <form action="/login" method="POST" onSubmit={(e)=> {
-        e.preventDefault();
-        handleSubmit(username, password);
-      }}>
-        <div>
-          <Field fullWidth={true} component={TextField} hintText='username' name='username' value={username}/>
+      <form
+        className="m-x-auto text-center app-login-form"
+        role="form"
+        onSubmit={this.props.handleSubmit(this.props.onSubmit)}
+      >
+        <Link to="/" className="app-brand m-b-lg"
+              style={{width: '100%', textDecoration: 'none', fontFamily: 'Roboto-Bold'}}>
+          <h1>[Y2Redux]</h1>
+        </Link>
+        <Field
+          component={Input}
+          placeholder='username'
+          name='username'
+          value={username}
+          disabled={submitting}
+        />
+        <Field component={Input}
+               placeholder='password'
+               name='password'
+               type='password'
+               value={password}
+               disabled={submitting}
+               componentClasses={{'FormGroup': FormGroup}}
+        />
+
+        <div className="m-b-lg">
+          <button type="submit" className="btn btn-primary" disabled={submitting}>Log In</button>
+          <button className="btn btn-default" disabled={submitting}>Sign up</button>
         </div>
-        <div>
-          <Field fullWidth={true} component={TextField} hintText='password' name='password' type='password'
-                 value={password}/>
-        </div>
-        <div>
-          <RaisedButton fullWidth={true} type='submit' disabled={pristine || submitting} label='Submit' primary={true}/>
-        </div>
+
+        <footer className="screen-login">
+          <a href="#" className="text-muted">Forgot password</a>
+        </footer>
       </form>
     )
   }
 }
-;
 
 export default reduxForm({
   form: 'loginform',

@@ -6,6 +6,7 @@ import CounterRoute from "./Counter";
 import LoginRoute from "./Login";
 import ContactRoute from "./Contact";
 import ResetPasswordRoute from "./ResetPassword";
+import SignupRoute from "./Signup";
 const _ = require('lodash')
 
 const DEFAULT_LAYOUT = CoreLayout
@@ -29,6 +30,7 @@ export const createRoutes = (store) => {
       LoginRoute(store),
       ContactRoute(store),
       ResetPasswordRoute(store),
+      SignupRoute(store)
     ]
   }
 }

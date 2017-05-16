@@ -1,22 +1,36 @@
 import React from "react";
-import {login} from "../../../store/user";
+import PropTypes from 'prop-types'
 import LoginView from "../components/LoginView";
 import LoginForm from "../components/LoginForm";
-import {getFormValues} from "redux-form";
+import {getFormValues, SubmissionError} from "redux-form";
 import {connect} from "react-redux";
+import {login} from "../../../store/user";
 
 const mapDispatchToProps = {
-  handleSubmit: login
-};
+  onSubmit: ({username, password}) => {//, dispatch, state) => {
+    return dispatch => dispatch(login(username, password)).catch(err => {
+      throw new SubmissionError({password: 'Invalid username or password'})
+    })
+  }
+}
+
 
 const mapStateToProps = (state) => {
   return {...getFormValues('loginform')(state)}
 }
 
-const LoginContainer = (props) => (
-  <LoginView>
-    <LoginForm {...props}/>
-  </LoginView>
-)
-export default connect(mapStateToProps, mapDispatchToProps)(LoginContainer)
+class LoginContainer extends React.Component {
+  render() {
+    const props = {...this.context, ...this.props}
+    return (
+      <LoginView>
+        <LoginForm {...props}/>
+      </LoginView>
+    )
+  }
+}
 
+LoginContainer.contextTypes = {
+  store: PropTypes.object
+}
+export default connect(mapStateToProps, mapDispatchToProps)(LoginContainer)
