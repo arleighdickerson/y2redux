@@ -9,14 +9,37 @@ use yii\base\Exception;
 use yii\base\Widget;
 use yii\bootstrap\Html;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Json;
 use yii\helpers\Url;
 use yii\httpclient\Client;
 use yii\httpclient\CurlTransport;
 
+/**
+ * A yii widget that renders the root react component as html.
+ *
+ *  - If isomorphic rendering is enabled, the widget will call out to the node
+ *    rendering service to get the component's rendered html.
+ *
+ *  - If isomorphic rendering is not enabled, the widget will simply render an
+ *    empty div to serve as the component's mount node.
+ *
+ * Class React
+ * @package frontend\widgets
+ */
 class React extends Widget {
+    /**
+     * @var array a redux state tree
+     */
     public $initialState = [];
+
+    /**
+     * @var array overrides for the yii http client used to call out to the rendering service
+     */
     public $clientConfig = [];
 
+    /**
+     * @inheritdoc
+     */
     public function init() {
         parent::init();
         $this->clientConfig = ArrayHelper::merge(
@@ -25,13 +48,32 @@ class React extends Widget {
         );
     }
 
+    /**
+     * @return string
+     */
     public function run() {
         WebpackAsset::register($this->view);
         return Html::tag('div', $this->getContent(), ['id' => $this->getId()]);
     }
 
+    /**
+     * Returns rendered content if isomorphic or a mount node if not
+     *
+     * @return string
+     * @throws Exception
+     */
     protected function getContent() {
         if (ArrayHelper::getValue(Yii::$app->params, 'isomorphic', false)) {
+            if (class_exists('V8Js')) {
+                $v8 = new \V8Js();
+                $initialState = Json::encode($this->view->initialState);
+                $script = <<<JS
+___INITIAL_STATE__ = $initialState;
+JS
+                    . PHP_EOL
+                    . file_get_contents(alias('@runtime/webpack/isomorphic.js'));
+                return $v8->executeString($script);
+            }
             $client = new Client($this->clientConfig);
             $response = $client->post('', [
                 'userAgent' => $_SERVER['HTTP_USER_AGENT'],
@@ -52,6 +94,9 @@ class React extends Widget {
         return '';
     }
 
+    /**
+     * @return array the default configuration for the http client
+     */
     protected static function defaultClientConfig() {
         return [
             'transport' => CurlTransport::class,

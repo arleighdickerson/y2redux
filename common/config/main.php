@@ -6,8 +6,5 @@ return [
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
-        'dispatcher' => [
-            'class' => 'common\components\Dispatcher'
-        ]
     ],
 ];

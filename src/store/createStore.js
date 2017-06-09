@@ -3,7 +3,6 @@ import thunk from "redux-thunk";
 import promiseMiddleware from "redux-promise-middleware";
 import makeRootReducer from "./reducers";
 import {syncHistory} from "redux-simple-router";
-import handleTransitions from './transitions'
 
 export default (history, initialState = {}) => {
   const routerMiddleware = syncHistory(history)
@@ -19,7 +18,7 @@ export default (history, initialState = {}) => {
   // ======================================================
   // Store Enhancers
   // ======================================================
-  const enhancers = [handleTransitions(history)]
+  const enhancers = []
   if (__DEV__) {
     const devToolsExtension = global.devToolsExtension
     if (typeof devToolsExtension === 'function') {

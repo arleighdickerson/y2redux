@@ -49,7 +49,16 @@ apt-get update
 apt-get upgrade -y
 
 info "Install additional software"
-apt-get install -y git nginx mysql-server-5.6 hhvm php5-curl php5-cli php5-intl php5-mysqlnd php5-gd php5-fpm
+apt-get install -y git nginx mysql-server-5.6 hhvm php5-curl php5-cli php5-intl php5-mysqlnd php5-gd php5-fpm npm
+
+info "Link legacy node"
+ln -s /usr/bin/nodejs /usr/bin/node
+
+info "Install nodemon"
+npm install -g nodemon
+
+info "Update npm"
+npm install -g npm
 
 info "Configure MySQL"
 sed -i "s/.*bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/my.cnf
@@ -62,7 +71,7 @@ echo "Done!"
 
 info "Configure HHVM"
 update-rc.d hhvm defaults
-update-alternatives --install /usr/bin/php php /usr/bin/hhvm 60
+#update-alternatives --install /usr/bin/php php /usr/bin/hhvm 60
 sed -i "s/hhvm.server.port.*/hhvm.server.file_socket=\/var\/run\/hhvm\/sock/g" /etc/hhvm/server.ini
 sed --in-place '/session./d' /etc/hhvm/server.ini
 sed --in-place '/session./d' /etc/hhvm/php.ini
@@ -76,6 +85,7 @@ echo "
 xdebug.enable=1
 xdebug.remote_enable=1
 xdebug.default_enable=1
+xdebug.remote_autostart=1
 xdebug.remote_handler=dbgp
 xdebug.remote_host=10.0.2.2
 debug.max_nesting_level=256
@@ -97,3 +107,12 @@ info "Initialize databases for MySQL"
 mysql -uroot <<< "CREATE DATABASE y2redux"
 mysql -uroot <<< "CREATE DATABASE y2redux_test"
 echo "Done!"
+
+info "Add latest node mirror"
+curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
+
+info "Install latest node"
+apt-get install -y nodejs
+
+info "Install composer"
+curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer

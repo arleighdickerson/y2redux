@@ -1,1 +1,1 @@
-module.exports = name => require('../../secrets/' + name.replace('.', '/') + '.json')
+module.exports = name => require('../../secrets/' + name.split('.').join('/') + '.json')

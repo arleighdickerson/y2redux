@@ -18,8 +18,9 @@ return [
     'components' => [
         'view' => [
             'as state' => [
-                'class' => 'frontend\components\InitialStateBehavior',
+                'class' => 'frontend\behaviors\InitialStateBehavior',
                 'initialState' => function () {
+                    // the state tree into which we merge additional values specific to the requested action
                     return [
                         'routing' => [
                             'location' => [
@@ -28,7 +29,7 @@ return [
                         ],
                         'user' => Yii::$app->user->isGuest
                             ? null
-                            : Yii::$app->user->identity->toArray()
+                            : Yii::$app->user->identity->getAttributes(['id', 'username'])
                     ];
                 }
             ]

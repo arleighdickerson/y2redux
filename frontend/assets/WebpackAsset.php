@@ -1,6 +1,5 @@
 <?php
 
-
 namespace frontend\assets;
 
 
@@ -10,12 +9,21 @@ use Yii;
 use yii\base\ErrorException;
 use yii\base\Exception;
 use yii\caching\ExpressionDependency;
-use yii\helpers\ArrayHelper;
-use yii\helpers\StringHelper;
 use yii\web\AssetBundle;
 use yii\web\View;
 
+/**
+ * This class is responsible for registering the webpack-compiled css and js with the view.
+ * It scrapes the template output by webpack for the asset urls and caches the results.
+ * Cache invalidation is determined by the modification time of the html template.
+ *
+ * Class WebpackAsset
+ * @package frontend\assets
+ */
 class WebpackAsset extends AssetBundle {
+    /**
+     * @var string the location of the template output by the webpack compiler
+     */
     public static $templatePath = "@frontend/runtime/webpack/index.html";
 
     public $depends = [
@@ -23,30 +31,12 @@ class WebpackAsset extends AssetBundle {
         BodyAsset::class
     ];
 
+    /**
+     * @inheritdoc
+     */
     public static function register($view) {
         self::configureChildAssets();
         return parent::register($view);
-    }
-
-    public static function getBundleSrc($name, $type = 'js') {
-        $path = Yii::getAlias('@frontend/web' . self::getBundleUrl($name, $type));
-        if (($contents = file_get_contents($path)) !== false) {
-            return $contents;
-        } else {
-            throw new Exception("Could not find file with path '$path'");
-        }
-    }
-
-    public static function getBundleUrl($name, $type = 'js') {
-        foreach (static::resolveUrls() as $class => $config) {
-            foreach (ArrayHelper::getValue($config, $type, []) as list($path)) {
-                $basename = basename($path);
-                if (StringHelper::startsWith($basename, $name . ".")) {
-                    return $path;
-                }
-            }
-        }
-        throw new Exception("Bundle with name $name could not be resolved");
     }
 
     /**
@@ -69,12 +59,20 @@ class WebpackAsset extends AssetBundle {
         return self::$_dom;
     }
 
+    /**
+     * configures and registers child bundles with the asset manager
+     * @return void
+     */
     private static function configureChildAssets() {
         foreach (self::resolveUrls() as $class => $config) {
             Yii::$app->assetManager->bundles[$class] = $config;
         }
     }
 
+    /**
+     * Scrapes the css and js urls from the webpack output template
+     * and caches the result for later use.
+     */
     private static function resolveUrls() {
         $result = self::complainIfTemplateMissing(function () {
             return Yii::$app->cache->get(self::class);
@@ -97,19 +95,39 @@ class WebpackAsset extends AssetBundle {
         return $result;
     }
 
+    /**
+     * @param int $pos the position constant (1 or 3)
+     * @return Dom\Tag[]
+     */
     private static function scrapeCssUrls($pos) {
         return self::getChildTags('link', $pos, 'href');
     }
 
+    /**
+     * @param int $pos the position constant (1 or 3)
+     * @return Dom\Tag[]
+     */
     private static function scrapeJsUrls($pos) {
         return self::getChildTags('script', $pos, 'src');
     }
 
+    /**
+     * @param string $tag the tag name
+     * @param int $pos the position constant (1 or 3)
+     * @param $attr
+     * @return Dom\Tag[]
+     */
 
     private static function getChildTags($tag, $pos, $attr) {
         return iterator_to_array(static::queryChildTags($tag, $pos, $attr));
     }
 
+    /**
+     * @param $tag
+     * @param $pos
+     * @param $attr
+     * @return \Generator
+     */
     private static function queryChildTags($tag, $pos, $attr) {
         $selector = [
             View::POS_HEAD => 'head',

@@ -109,7 +109,7 @@ function alias($alias, $throwException = true) {
  * @throws yii\base\Exception
  */
 function secret($name, $throwException = true) {
-    $filename = alias('@project/secrets/' . str_replace('.', '/', $name) . '.json');
+    $filename = alias('@secrets/' . str_replace('.', '/', $name) . '.json');
     if (file_exists($filename)) {
         return (string)Json::decode(file_get_contents($filename));
     } elseif (!$throwException) {
