@@ -4,10 +4,7 @@
 namespace frontend\components;
 
 
-use stringEncode\Exception;
 use yii\base\Behavior;
-use yii\di\Instance;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 use yii\web\View;
 
@@ -44,7 +41,7 @@ class InitialStateBehavior extends Behavior {
     private function registerInitialState() {
         $json = $this->initialState === null ? 'undefined' : Json::encode($this->initialState, JSON_FORCE_OBJECT | 320);
         $js = <<<JS
-window.___INITIAL_STATE__ = $json;
+___INITIAL_STATE__ = $json;
 JS;
         $this->owner->registerJs($js, View::POS_HEAD);
     }

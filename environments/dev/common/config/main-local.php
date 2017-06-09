@@ -4,8 +4,8 @@ return [
         'db' => [
             'class' => 'yii\db\Connection',
             'dsn' => 'mysql:host=localhost;dbname=y2redux',
-            'username' => 'root',
-            'password' => '',
+            'username' => secret('db.username'),
+            'password' => secret('db.password'),
             'charset' => 'utf8',
         ],
         'mailer' => [

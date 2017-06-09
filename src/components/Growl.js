@@ -1,11 +1,11 @@
-import React from "react";
+import React, {Component} from "react";
 import {Alert} from "react-bootstrap";
 const EventEmitter = require('events').EventEmitter
 const _ = require('lodash')
 
 let counter = 0
 
-const MESSAGE_ADDED = 'MessageAdded'
+const MESSAGE_ADDED = 'MESSAGE_ADDED'
 
 const emitter = new EventEmitter()
 
@@ -39,12 +39,12 @@ export default class Growl extends React.Component {
   setNotifications(notifications) {
     this.setState({
       notifications: notifications.map(n => {
-        if (typeof n == 'string') {
+        if (typeof n === 'string') {
           n = {component: <p>{n}</p>}
         }
         const key = counter++
         const onDismiss = () => this.setNotifications(
-          _.filter(this.state.notifications, n => n.key != key)
+          _.filter(this.state.notifications, n => n.key !== key)
         )
         return {key, onDismiss, ...n}
       })
@@ -60,7 +60,7 @@ export default class Growl extends React.Component {
   }
 }
 
-class Message extends React.Component {
+class Message extends Component {
   componentDidMount() {
     if (this.props.timeout) {
       const close = () => {

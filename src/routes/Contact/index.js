@@ -1,5 +1,5 @@
-import ContactView from "./components/ContactView";
+import ContactContainer from "./containers/ContactContainer";
 export default (store) => ({
   path: 'contact',
-  component: ContactView
+  component: ContactContainer
 })

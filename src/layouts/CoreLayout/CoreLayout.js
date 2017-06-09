@@ -4,6 +4,8 @@ import {connect} from "react-redux";
 import {logout} from "../../store/user"
 import Growl from "../../components/Growl";
 import PropTypes from 'prop-types'
+import getHeaderItems from './header-items'
+import './CoreLayout.less'
 
 const UserOptions = ({handleLogout}) => (
   <div
@@ -27,7 +29,7 @@ const mapDispatchToProps = {
 
 const mapStateToProps = ({user}) => ({user})
 
-const DEFAULT_AVATAR = require('../../../public/img/avatar.gif')
+const DEFAULT_AVATAR = require('../../static/img/avatar.gif')
 
 const DEFAULT_SEARCH = (
   <form className="navbar-form navbar-right app-search" role="search">
@@ -53,42 +55,13 @@ class CoreLayout extends React.Component {
     this.toggleUserOptions = () => this.setState({showUserOptions: !this.state.showUserOptions})
   }
 
-  getItems(user) {
-    const items = [
-      {
-        label: 'Home',
-        route: '/'
-      },
-      {
-        label: 'About',
-        route: 'about'
-      },
-      {
-        label: 'Counter',
-        route: 'counter'
-      }
-    ];
-    if (user) {
-      //
-    } else {
-      items.push({
-        label: 'Sign Up',
-        route: 'signup'
-      }, {
-        label: 'Log In',
-        route: 'login'
-      })
-    }
-    return items
-  }
-
   render() {
     const {children, user, handleLogout} = this.props
 
     return (
       <div className="with-top-navbar">
         <Growl/>
-        <HeaderContainer avatar={DEFAULT_AVATAR} items={this.getItems(user)}>{/*
+        <HeaderContainer brand='[Y2Redux]' avatar={DEFAULT_AVATAR} items={getHeaderItems(user)}>{/*
          <a className="app-notifications" href="notifications/index.html">
          <span className="icon icon-bell"/>
          </a>*/}
@@ -108,9 +81,7 @@ class CoreLayout extends React.Component {
           }
 
         </HeaderContainer>
-        <div className='container p-t-md'>
-          {children}
-        </div>
+        {children}
       </div>
     )
   }

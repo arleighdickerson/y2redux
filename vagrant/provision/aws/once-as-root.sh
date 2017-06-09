@@ -40,11 +40,12 @@ debconf-set-selections <<< "mysql-server-5.6 mysql-server/root_password_again pa
 echo "Done!"
 
 info "Update OS software"
+add-apt-repository -y "deb http://dl.hhvm.com/ubuntu $(lsb_release -sc) main"
 apt-get update
 info "Skipping OS software update"
 
 info "Install additional software"
-apt-get install -y git php5-curl php5-cli php5-intl php5-mysqlnd php5-gd php5-fpm nginx mysql-server-5.6 npm
+apt-get install -y git php5-curl php5-cli php5-intl php5-mysqlnd php5-gd php5-fpm nginx mysql-server-5.6 npm software-properties-common hhvm
 
 info "Link legacy node"
 ln -s /usr/bin/nodejs /usr/bin/node

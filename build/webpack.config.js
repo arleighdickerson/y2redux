@@ -26,6 +26,12 @@ const webpackConfig = {
   },
   module: {
     loaders: []
+  },
+  node: {
+    net: 'empty',
+    tls: 'empty',
+    dns: 'empty',
+    fs: 'empty'
   }
 }
 // ------------------------------------
@@ -90,9 +96,6 @@ if (__DEV__) {
 } else if (__PROD__) {
   debug('Enable plugins for isomorphic rendering.')
   webpackConfig.plugins.unshift(
-    new StatsWriterPlugin({
-      filename: config.utils_paths.base('webpack-stats.json')
-    }),
     new AssetsPlugin(),
     new IsomorphicTools({assets: {}})
   )
@@ -223,6 +226,9 @@ webpackConfig.module.loaders.push(
   {
     test: /\.(png|jpg|gif)$/,
     loader: 'url-loader?limit=8192'
+  }, {
+    test: /\.md$/,
+    loader: 'null'
   }
 )
 /* eslint-enable */

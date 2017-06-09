@@ -5,6 +5,7 @@ namespace frontend\modules\api\controllers;
 
 
 use common\models\LoginForm;
+use frontend\models\ContactForm;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -51,16 +52,28 @@ class DefaultController extends Controller {
         return null;
     }
 
-    public function actionSignup(){
-    }
-
     public function actionLogin() {
         $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post(),'') && $model->login()) {
+        if ($model->load(Yii::$app->request->post(), '') && $model->login()) {
             return Yii::$app->user->identity;
         }
         $res = Yii::$app->response;
         $res->statusCode = 422;
         $res->statusText = 'Authentication Failure';
+    }
+
+    public function actionContact() {
+        $model = new ContactForm();
+        $post = request()->post();
+        if ($model->load($post, '') && $model->validate()) {
+            if ($model->sendEmail(Yii::$app->params['adminEmail'])) {
+                return [];
+            } else {
+                response()->statusCode = 422;
+                response()->statusText = 'Validation Failure';
+                return ArrayHelper::getColumn($model->getErrors(), '0');
+            }
+        }
+        return null;
     }
 }

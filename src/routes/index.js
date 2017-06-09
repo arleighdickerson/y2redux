@@ -1,17 +1,38 @@
-// We only need to import the modules necessary for initial render
+import React from 'react'
 import CoreLayout from "../layouts/CoreLayout";
 import Home from "./Home";
-import AboutRoute from "./About";
-import CounterRoute from "./Counter";
 import LoginRoute from "./Login";
 import ContactRoute from "./Contact";
 import ResetPasswordRoute from "./ResetPassword";
 import SignupRoute from "./Signup";
+import * as Skills from "./Skills";
+import * as Progs from "./Progs";
+import {Alert} from 'react-bootstrap'
+
 const _ = require('lodash')
 
-const DEFAULT_LAYOUT = CoreLayout
+const DEFAULT_LAYOUT = ({children, ...props}) => {
+  return (
+    <CoreLayout {...props}>
+      <div className="container p-t-md">
+        <Alert bsStyle="danger">
+          This section is <strong>Under Construction!</strong>
+        </Alert>
+        {children}
+      </div>
+    </CoreLayout>
+  )
+}
+
+const HOME_LAYOUT = ({children, ...props}) => (
+  <CoreLayout {...props}>
+    {children}
+  </CoreLayout>
+)
+
 const LAYOUT_MAP = _.mapKeys({
-  login: null
+  login: null,
+  '': HOME_LAYOUT,
 }, (layout, path) => '/' + path);
 
 export const createRoutes = (store) => {
@@ -25,12 +46,14 @@ export const createRoutes = (store) => {
     },
     indexRoute: Home(store),
     childRoutes: [
-      AboutRoute(store),
-      CounterRoute(store),
       LoginRoute(store),
       ContactRoute(store),
       ResetPasswordRoute(store),
-      SignupRoute(store)
+      SignupRoute(store),
+      Skills.Index(store),
+      Skills.Detail(store),
+      Progs.Index(store),
+      Progs.Detail(store),
     ]
   }
 }

@@ -77,7 +77,7 @@ foreach ($files as $file) {
     }
 }
 
-$callbacks = ['setCookieValidationKey', 'setWritable', 'setExecutable', 'createSymlink'];
+$callbacks = ['setCookieValidationKey', 'setWritable', 'setExecutable', 'createSymlink', 'createSecrets'];
 foreach ($callbacks as $callback) {
     if (!empty($env[$callback])) {
         $callback($root, $env[$callback]);
@@ -296,4 +296,32 @@ function formatMessage($message, $styles)
     }
 
     return sprintf("\x1b[%sm", implode(';', array_map('getStyleCode', $styles))) . $message . "\x1b[0m";
+}
+
+// ========================================================
+// y2redux-specific callbacks
+// ========================================================
+
+function createSecrets($project, $secrets)
+{
+    echo "   initializing file structure for secret stuff\n";
+    foreach ($secrets as $filename => $defaultValue) {
+        $path = explode('/', $filename);
+        $accum = "$project/secrets";
+        foreach ($path as $i => $frag) {
+            $accum .= "/$frag";
+            if ($i + 1 === count($path)) {
+                if (!is_file($accum)) {
+                    touch($accum);
+                    chmod($accum, 0644);
+                    file_put_contents($accum, json_encode($defaultValue));
+                    echo "      created secret file with default value at `$accum`\n";
+                }
+            } else {
+                if (!is_dir($accum)) {
+                    mkdir($accum, 0755);
+                }
+            }
+        }
+    }
 }

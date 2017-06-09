@@ -40,21 +40,19 @@ debconf-set-selections <<< "mysql-server-5.6 mysql-server/root_password password
 debconf-set-selections <<< "mysql-server-5.6 mysql-server/root_password_again password \"''\""
 echo "Done!"
 
+
 info "Update OS software"
+apt-get install -y software-properties-common
+apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0x5a16e7281be7a449
+add-apt-repository "deb http://dl.hhvm.com/ubuntu trusty main"
 apt-get update
 apt-get upgrade -y
 
 info "Install additional software"
-apt-get install -y git php5-curl php5-cli php5-intl php5-mysqlnd php5-gd php5-fpm nginx mysql-server-5.6 php5-xdebug
+apt-get install -y git nginx mysql-server-5.6 hhvm php5-curl php5-cli php5-intl php5-mysqlnd php5-gd php5-fpm
 
 info "Configure MySQL"
 sed -i "s/.*bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/my.cnf
-echo "Done!"
-
-info "Configure PHP-FPM"
-sed -i 's/user = www-data/user = vagrant/g' /etc/php5/fpm/pool.d/www.conf
-sed -i 's/group = www-data/group = vagrant/g' /etc/php5/fpm/pool.d/www.conf
-sed -i 's/owner = www-data/owner = vagrant/g' /etc/php5/fpm/pool.d/www.conf
 echo "Done!"
 
 info "Configure NGINX"
@@ -62,30 +60,40 @@ sed -i 's/user www-data/user vagrant/g' /etc/nginx/nginx.conf
 sed --in-place 's/sendfile\ on/sendfile\ off/g' /etc/nginx/nginx.conf
 echo "Done!"
 
+info "Configure HHVM"
+update-rc.d hhvm defaults
+update-alternatives --install /usr/bin/php php /usr/bin/hhvm 60
+sed -i "s/hhvm.server.port.*/hhvm.server.file_socket=\/var\/run\/hhvm\/sock/g" /etc/hhvm/server.ini
+sed --in-place '/session./d' /etc/hhvm/server.ini
+sed --in-place '/session./d' /etc/hhvm/php.ini
+echo 'RUN_AS_USER="vagrant"
+RUN_AS_GROUP="vagrant"
+' >> /etc/default/hhvm
+chown -R vagrant /var/run/hhvm
+
 info "Configure XDEBUG"
-
-echo "xdebug.remote_enable=1
+echo "
+xdebug.enable=1
+xdebug.remote_enable=1
 xdebug.default_enable=1
-xdebug.profiler_enable=1
 xdebug.remote_handler=dbgp
-xdebug.remote_autostart=1
 xdebug.remote_host=10.0.2.2
-xdebug.max_nesting_level=256
-" >> /etc/php5/mods-available/xdebug.ini
+debug.max_nesting_level=256
+xdebug.idekey=PHPSTORM
+" >> /etc/hhvm/php.ini
 
-echo "xdebug.idekey=CLI" >> /etc/php5/cli/php.ini
-echo "xdebug.idekey=FPM" >> /etc/php5/fpm/php.ini
+info "Configure PHP-FPM"
+apt-get install -y php5-curl php5-cli php5-intl php5-mysqlnd php5-gd php5-fpm
+sed -i 's/user = www-data/user = vagrant/g' /etc/php5/fpm/pool.d/www.conf
+sed -i 's/group = www-data/group = vagrant/g' /etc/php5/fpm/pool.d/www.conf
+sed -i 's/owner = www-data/owner = vagrant/g' /etc/php5/fpm/pool.d/www.conf
+echo "Done!"
 
 info "Enabling site configuration"
-ln -s /app/vagrant/nginx/vb.conf /etc/nginx/sites-enabled/app.conf
+ln -sf /app/vagrant/nginx/vb.conf /etc/nginx/sites-enabled/app.conf
 echo "Done!"
 
 info "Initialize databases for MySQL"
 mysql -uroot <<< "CREATE DATABASE y2redux"
 mysql -uroot <<< "CREATE DATABASE y2redux_test"
 echo "Done!"
-
-info "Install composer"
-curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-sed --in-place '/session.save_handler/d' /etc/php5/fpm/php.ini

@@ -4,7 +4,7 @@ import createStore from "./store/createStore";
 import AppContainer from "./containers/AppContainer";
 import {browserHistory as history} from "react-router";
 
-// =======================================================
+// ========================================================
 // Store Instantiation
 // ========================================================
 const initialState = global.___INITIAL_STATE__

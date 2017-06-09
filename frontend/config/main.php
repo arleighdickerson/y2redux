@@ -39,7 +39,7 @@ return [
             ]
         ],
         'errorHandler' => [
-            'errorAction' => 'site/error',
+            'errorAction' => 'default/error',
         ],
         'session' => ['class' => 'yii\web\DbSession'],
         'user' => [

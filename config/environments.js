@@ -7,7 +7,7 @@ module.exports = {
   // ======================================================
   development : (config) => ({
     server_host : 'localhost',
-    compiler_devtool: 'eval-source-map',
+    compiler_devtool: 'source-map',
   }),
 
   // ======================================================

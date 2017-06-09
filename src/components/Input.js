@@ -1,5 +1,4 @@
 import React from "react";
-//import {FormGroup, ControlLabel, FormControl} from "react-bootstrap";
 import * as rb from "react-bootstrap";
 const _ = require('lodash')
 
@@ -25,7 +24,11 @@ export default class Input extends React.Component {
       type,
       meta: {error, warning, touched},
       ...props
-    } = this.props;
+    } = this.props
+
+    if (type === 'file') {
+      props.value = ''
+    }
 
     let message;
     const validationState = touched && ( error && "error" ) || ( warning && "warning" ) || null;
