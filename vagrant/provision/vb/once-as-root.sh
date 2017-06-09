@@ -62,7 +62,7 @@ echo "Done!"
 
 info "Configure HHVM"
 update-rc.d hhvm defaults
-update-alternatives --install /usr/bin/php php /usr/bin/hhvm 60
+#update-alternatives --install /usr/bin/php php /usr/bin/hhvm 60
 sed -i "s/hhvm.server.port.*/hhvm.server.file_socket=\/var\/run\/hhvm\/sock/g" /etc/hhvm/server.ini
 sed --in-place '/session./d' /etc/hhvm/server.ini
 sed --in-place '/session./d' /etc/hhvm/php.ini
@@ -76,6 +76,7 @@ echo "
 xdebug.enable=1
 xdebug.remote_enable=1
 xdebug.default_enable=1
+xdebug.remote_autostart=1
 xdebug.remote_handler=dbgp
 xdebug.remote_host=10.0.2.2
 debug.max_nesting_level=256
@@ -97,3 +98,6 @@ info "Initialize databases for MySQL"
 mysql -uroot <<< "CREATE DATABASE y2redux"
 mysql -uroot <<< "CREATE DATABASE y2redux_test"
 echo "Done!"
+
+info "Install composer"
+curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
