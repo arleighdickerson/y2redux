@@ -14,12 +14,13 @@ use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 use yii\web\BadRequestHttpException;
+use yii\web\Controller;
 use yii\web\Response;
 
 /**
  * Site controller
  */
-class DefaultController extends IsomorphicController {
+class DefaultController extends Controller {
     /**
      * @inheritdoc
      */

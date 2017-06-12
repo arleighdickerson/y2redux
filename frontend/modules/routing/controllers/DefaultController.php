@@ -1,6 +1,6 @@
 <?php
 
-namespace frontend\controllers;
+namespace frontend\modules\routing\controllers;
 
 
 use frontend\widgets\React;
@@ -16,14 +16,9 @@ use yii\web\Controller;
  * Class IsomorphicController
  * @package frontend\controllers
  */
-abstract class IsomorphicController extends Controller {
-    /**
-     * @param string $id
-     * @param array $params
-     * @return mixed|string
-     */
-    public function runAction($id, $params = []) {
-        $result = parent::runAction($id, $params);
+class DefaultController extends Controller {
+    public function afterAction($action, $result) {
+        $result = parent::afterAction($action, $result);
         if ($result === null) {
             $result = [];
         }

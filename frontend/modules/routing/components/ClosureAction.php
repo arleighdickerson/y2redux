@@ -1,7 +1,7 @@
 <?php
 
 
-namespace frontend\components;
+namespace frontend\modules\routing\components;
 
 
 use ReflectionFunction;
@@ -11,19 +11,19 @@ use yii\base\InvalidConfigException;
 use yii\web\BadRequestHttpException;
 
 class ClosureAction extends Action {
-    public $run;
+    public $thunk;
 
     public function runWithParams($params) {
-        if (!is_callable($this->run)) {
-            throw new InvalidConfigException(get_class($this) . '::run must be callable');
+        if (!is_callable($this->thunk)) {
+            throw new InvalidConfigException(get_class($this) . '::thunk must be callable');
         }
         $args = $this->bindActionParams($params);
-        Yii::trace('Running action: ' . get_class($this) . '::run', __METHOD__);
+        Yii::trace('Running action: ' . get_class($this) . '::thunk', __METHOD__);
         if (Yii::$app->requestedParams === null) {
             Yii::$app->requestedParams = $args;
         }
         if ($this->beforeRun()) {
-            $result = call_user_func_array($this->run, $args);
+            $result = call_user_func_array($this->thunk, $args);
             $this->afterRun();
 
             return $result;
@@ -33,7 +33,7 @@ class ClosureAction extends Action {
     }
 
     protected function bindActionParams($params) {
-        $method = new ReflectionFunction($this->run);
+        $method = new ReflectionFunction($this->thunk);
         $args = [];
         $missing = [];
         $actionParams = [];

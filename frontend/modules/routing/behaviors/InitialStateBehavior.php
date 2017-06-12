@@ -1,7 +1,6 @@
 <?php
 
-
-namespace frontend\behaviors;
+namespace frontend\modules\routing\behaviors;
 
 
 use yii\base\Behavior;
