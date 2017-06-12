@@ -11,6 +11,7 @@ use ProxyManager\Factory\AccessInterceptorValueHolderFactory;
 use yii\base\BootstrapInterface;
 use yii\di\Instance;
 use yii\helpers\ArrayHelper;
+use yii\web\Application;
 use yii\web\Controller;
 use yii\web\UrlManager;
 use yii\web\UrlRule;
@@ -89,6 +90,11 @@ class Module extends \yii\base\Module implements UrlRuleInterface, BootstrapInte
 
     public function setRoutes($routes) {
         if (is_callable($routes)) {
+            \Yii::$app->on(Application::EVENT_BEFORE_REQUEST, function () use ($routes) {
+                call_user_func($routes, $this);
+            });
+        }
+        if (is_callable($routes)) {
             call_user_func($routes, $this);
             return;
         }
@@ -106,7 +112,10 @@ class Module extends \yii\base\Module implements UrlRuleInterface, BootstrapInte
 
     public function createRules(array $routes, $asObjects = false) {
         $rules = array_map(function ($route) {
-            list($mount, $path, $thunk) = $route;
+            $thunk = array_pop($route);
+            $path = array_pop($route);
+            $mount = $route ? array_pop($route) : $this->defaultRoute;
+
             return [
                 'class' => IsomorphicUrlRule::class,
                 'route' => "{$this->uniqueId}/$mount",

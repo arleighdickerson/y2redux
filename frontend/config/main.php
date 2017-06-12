@@ -20,11 +20,9 @@ return [
         'api' => 'frontend\modules\api\Module',
         'routeManager' => [
             'class' => 'frontend\modules\routing\Module',
-            'routes' => [
-                ['default', '', function () {
-                    return '';
-                }]
-            ]
+            'routes' => function ($manager) {
+                require(__DIR__ . '/routes.php');
+            },
         ]
     ],
     'components' => [
