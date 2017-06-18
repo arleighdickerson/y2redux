@@ -75,6 +75,7 @@ webpackConfig.plugins = [
   ),
   new WriteFilePlugin({log:false}),
   new webpack.DefinePlugin(config.globals),
+  new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/),
   new HtmlWebpackPlugin({
     template: paths.client('index.html'),
     hash: false,
