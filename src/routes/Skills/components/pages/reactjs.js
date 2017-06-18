@@ -33,25 +33,25 @@ export default props => (
     <h3>Redux</h3>
     <p>
       For single page apps, I love Redux for these reasons:
-      <ol>
-        <li>
-          Purely functional code: if you're wondering how something works,
-          you can play follow the stack frames and see pretty easily what's going on.
-        </li>
-        <li>
-          Their development tools are awesome.
-        </li>
-        <li>
-          You don't have to worry about hooking stores up to talk to each other because you can only use one store.
-        </li>
-        <li>
-          No hydrate/dehydrate nonsense: your state has to be (de)serializable to pure JSON.
-        </li>
-        <li>
-          Isomorphic rendering won't make you want to commit self-harm. It's still a pain to get set up, though.
-        </li>
-      </ol>
     </p>
+    <ol>
+      <li>
+        Purely functional code: if you're wondering how something works,
+        you can play follow the stack frames and see pretty easily what's going on.
+      </li>
+      <li>
+        Their development tools are awesome.
+      </li>
+      <li>
+        You don't have to worry about hooking stores up to talk to each other because you can only use one store.
+      </li>
+      <li>
+        No hydrate/dehydrate nonsense: your state has to be (de)serializable to pure JSON.
+      </li>
+      <li>
+        Isomorphic rendering won't make you want to commit self-harm. It's still a pain to get set up, though.
+      </li>
+    </ol>
     <h3>Vanilla</h3>
     <p>When I have to write components that live inside legacy (brownfield) environments, I just use facebook's
       dispatcher and wire it up manually. No need for a firehose if there's not a fire.</p>

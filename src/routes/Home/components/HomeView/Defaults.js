@@ -1,7 +1,13 @@
 import React from 'react'
 
 export const about = (
-  <p>I am an application developer with the American Economic Association.</p>
+  <div>
+    <p>I am an application developer with the American Economic Association.</p>
+    <p>I've been in the game <a href="https://web.archive.org/web/20010210145721/http://www.expage.com:80/page/arleighsite">awhile</a>,
+      but my disdain for the status-quo and desire to hone my skills drive me forward every day.
+      I love this profession because I am always learning something new.
+    </p>
+  </div>
 )
 
 export const skills = {
