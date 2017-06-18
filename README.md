@@ -42,7 +42,7 @@ Usage
 
 ### Production
 **From the project root of the HOST MACHINE:**
-- do `./init --environment=Production Development --overwrite=all` to set the yii application to production mode
+- do `./init --environment=Production --overwrite=all` to set the yii application to production mode
 - do `npm run compile` to create the static asset files
 - to use CLIENT-SIDE rendering: change 'isomorphic' to false in frontend/config/params-local.php
 - to use ISOMORPHIC rendering: turn on the node rendering service by running `npm run prod`
