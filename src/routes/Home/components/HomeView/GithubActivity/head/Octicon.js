@@ -1,4 +1,4 @@
-require('octicons/build/octicons.css')
+require('react-octicon/node_modules/octicons/octicons/octicons.scss') //???
 require('react-octicon/css/Octicon.css')
 
 import React from 'react'
