@@ -2,9 +2,6 @@ import React, {Component} from 'react'
 
 export default props => (
   <div>
-    <p>
-      This is a rough draft, I'll probably do some revisions later.
-    </p>
     <h2>React</h2>
     <p>
       <strike>Sometimes</strike> Often at my job I get sucked into ops or frontend (I wear many hats).
