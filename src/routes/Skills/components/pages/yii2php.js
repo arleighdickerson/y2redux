@@ -19,6 +19,20 @@ export default props => (
     </blockquote>
     <h2>Yii2</h2>
     <p>
+      <a href="http://www.yiiframework.com">Yii</a> is a <em>lightweight</em> PHP framework that does what you need it to and not a whole lot else.
+      I acquired my first full-time industry job at the <a href="https://www.aeaweb.org">American Economic
+      Association</a> because
+      I was a seasoned Yii developer. I also authored a trail of failed startup concepts using Yii.
+    </p>
+    <p>
+      I am a big fan of this framework because of its simplicity.
+      If you understand the basic Object/Component/Model/Controller class hierarchy,
+      then you can find your way around the rest of the framework fairly easily.
+      After being hired at the AEA, I realized that this simplicity serves another purpose:
+      bringing your colleagues (and managers) up to speed on the framework is a cake walk.
+    </p>
+    <p>
+      <p className="well">More stuff here....</p>
     </p>
   </div>
 )

@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 
 export default props => (
   <div>
-    <h2>React</h2>
+    <h2><a href="https://facebook.github.io/react">React</a></h2>
     <p>
       <strike>Sometimes</strike> Often at my job I get sucked into ops or frontend (I wear many hats).
       Once upon a time I was directed to build the frontend to a rather complex calendaring/scheduling system
@@ -22,12 +22,12 @@ export default props => (
         It makes me more productive at frontend development
       </li>
     </ol>
-    <h2>Flux</h2>
+    <h2><a href="https://facebook.github.io/flux">Flux</a></h2>
     <p>
       I use more than one flux implementation, where my choice depends on the problem at hand.
       Word on the street is that facebook does this too, so I guess I'm probably not doing it wrong
     </p>
-    <h3>Redux</h3>
+    <h3><a href="http://redux.js.org">Redux</a></h3>
     <p>
       For single page apps, I love Redux for these reasons:
     </p>
@@ -43,13 +43,16 @@ export default props => (
         You don't have to worry about hooking stores up to talk to each other because you can only use one store.
       </li>
       <li>
-        No hydrate/dehydrate nonsense: your state has to be (de)serializable to pure JSON.
+        No <a
+        href="https://stackoverflow.com/questions/29824908/what-does-dehydrate-and-rehydrate-stand-for-in-fluxible">hydrate/dehydrate
+        nonsense</a>:
+        your state has to be (de)serializable to pure JSON.
       </li>
       <li>
-        Isomorphic rendering won't make you want to commit self-harm. It's still a pain to get set up, though.
+        Isomorphic rendering won't make you want to change career paths. It's still a pain to get set up, though.
       </li>
     </ol>
-    <h3>Vanilla</h3>
+    <h3><a href="https://facebook.github.io/flux/docs/flux-utils.html">Vanilla</a></h3>
     <p>When I have to write components that live inside legacy (brownfield) environments, I just use facebook's
       dispatcher and wire it up manually. No need for a firehose if there's not a fire.</p>
   </div>
