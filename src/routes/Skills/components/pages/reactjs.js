@@ -10,7 +10,7 @@ export default props => (
       It was <em>just</em> complex enough that I didn't think the current in-house toolchains would be a good fit.
     </p>
     <p>
-      Even though ReactJS has yet to fully catch on on the east coast (well, Pittsburgh anyway...)
+      Even though ReactJS has yet to fully catch on on the east coast,
       I decided to give it a spin knowing that if it sucked I could always try Angular next.
     </p>
     <h3>I ended up loving it for two reasons:</h3>
@@ -37,7 +37,8 @@ export default props => (
         you can play follow the stack frames and see pretty easily what's going on.
       </li>
       <li>
-        Their development tools are awesome.
+        Their <a href="https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd?hl=en">development
+        tools</a> are awesome.
       </li>
       <li>
         You don't have to worry about hooking stores up to talk to each other because you can only use one store.
