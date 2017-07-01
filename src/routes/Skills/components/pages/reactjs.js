@@ -56,5 +56,12 @@ export default props => (
     <h3><a href="https://facebook.github.io/flux/docs/flux-utils.html">Vanilla</a></h3>
     <p>When I have to write components that live inside legacy (brownfield) environments, I just use facebook's
       dispatcher and wire it up manually. No need for a firehose if there's not a fire.</p>
+    <h3>Examples</h3>
+    <ul>
+      <li>
+        <a href="https://github.com/arleighdickerson/y2redux/tree/master/src">Y2Redux</a>: the entire frontend (/src) is
+        react with a flux redux implementation.
+      </li>
+    </ul>
   </div>
 )
