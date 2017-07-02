@@ -8,7 +8,7 @@
     "hmr",
     "isomorphic"
   ],
-  "homepage": "http://arleighdickerson.us",
+  "homepage": "https://www.arleighdickerson.us",
   "type": "project",
   "minimum-stability": "stable",
   "require": {
@@ -17,7 +17,14 @@
     "yiisoft/yii2-swiftmailer": "*",
     "yiisoft/yii2-httpclient": "*",
     "paquettg/php-html-parser": "^1.7",
-    "guzzlehttp/guzzle": "~6.0"
+    "guzzlehttp/guzzle": "~6.0",
+    "react/child-process": "^0.4.3",
+    "wyrihaximus/react-child-process-promise": "^2.0",
+    "react/stream": "*",
+    "rybakit/msgpack": "^0.2.2",
+    "cboden/ratchet": "0.3.*",
+    "ratchet/pawl": "0.1.*",
+    "ocramius/proxy-manager": "^1.0"
   },
   "require-dev": {
     "yiisoft/yii2-debug": "*",

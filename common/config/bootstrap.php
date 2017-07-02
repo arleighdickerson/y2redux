@@ -1,6 +1,9 @@
 <?php
 
-use yii\helpers\Json;
+use ProxyManager\Factory\AccessInterceptorValueHolderFactory;
+use React\ChildProcess\Process;
+use React\EventLoop\LoopInterface;
+use React\Promise\PromiseInterface;
 
 Yii::setAlias('@project', dirname(dirname(__DIR__)));
 Yii::setAlias('@common', dirname(__DIR__));
@@ -9,6 +12,40 @@ Yii::setAlias('@backend', dirname(dirname(__DIR__)) . '/backend');
 Yii::setAlias('@console', dirname(dirname(__DIR__)) . '/console');
 Yii::setAlias('@src', dirname(dirname(__DIR__)) . '/src');
 Yii::setAlias('@secrets', dirname(dirname(__DIR__)) . '/secrets');
+Yii::$container
+    ->setSingleton(LoopInterface::class, function () {
+        return React\EventLoop\Factory::create();
+    })
+    ->setSingleton('loop', React\EventLoop\LoopInterface::class)
+    ->set(Process::class, function ($container, $params, $config) {
+        $cwd = alias('@project');
+        $env = null;
+        $options = [];
+        extract($config, EXTR_OVERWRITE);
+        /** @var string $cmd */
+        $process = new Process($cmd, $cwd, $env, $options);
+        /** @var AccessInterceptorValueHolderFactory $factory */
+        if (version_compare(phpversion(), '5.5', '<=')) {
+            $factory = $container->get(AccessInterceptorValueHolderFactory::class);
+            $getPipes = (new \ReflectionClass($process))->getProperty('pipes');
+            $process = $factory->createProxy($process, [], [
+                    'start' => function () use ($getPipes, $process) {
+                        $getPipes->setAccessible(true);
+                        $pipes =& $getPipes->getValue($process);
+                        // hax to fix SEGFAULT on php 5.5
+                        stream_set_read_buffer($pipes[1], 1);
+                        stream_set_read_buffer($pipes[2], 1);
+                        $getPipes->setAccessible(false);
+                    }
+                ]
+            );
+        }
+        return $process;
+    })
+    ->setSingleton(AccessInterceptorValueHolderFactory::class, function ($container, $params, $config) {
+        // for the monkeys patching your source
+        return new AccessInterceptorValueHolderFactory(ArrayHelper::getValue($params, '0', null));
+    });
 
 
 /**
@@ -60,10 +97,10 @@ function user() {
 /**
  * get a reference to the auth manager
  *
- * @return yii\rbac\ManagerInterface
+ * @return \yii\rbac\ManagerInterface
  */
 function auth() {
-    return app()->get('authManager', true);
+    return app()->get('authManager');
 }
 
 /**
@@ -94,9 +131,43 @@ function session() {
 }
 
 /**
+ * @return LoopInterface
+ */
+function loop() {
+    return ctx()->get(React\EventLoop\LoopInterface::class);
+}
+
+/**
+ * @param string $name the parameter name
+ * @param mixed $defaultValue the default parameter value if the parameter does not exist.
+ * @return array|mixed
+ */
+function get($name = null, $defaultValue = null) {
+    return request()->get($name, $defaultValue);
+}
+
+/**
+ * @param string $name the parameter name
+ * @param mixed $defaultValue the default parameter value if the parameter does not exist.
+ * @return array|mixed
+ */
+function post($name = null, $defaultValue = null) {
+    return request()->post($name, $defaultValue);
+}
+
+/**
+ * @param $arg
+ */
+function print_jer($arg) {
+    echo "<pre>";
+    print_r($arg);
+    echo "</pre>";
+}
+
+/**
  * @param $alias
- * @param $throwException
- * @return string
+ * @param bool $throwException
+ * @return bool|string
  */
 function alias($alias, $throwException = true) {
     return Yii::getAlias($alias, $throwException);
@@ -111,7 +182,7 @@ function alias($alias, $throwException = true) {
 function secret($name, $throwException = true) {
     $filename = alias('@secrets/' . str_replace('.', '/', $name) . '.json');
     if (file_exists($filename)) {
-        return (string)Json::decode(file_get_contents($filename));
+        return (string)yii\helpers\Json::decode(file_get_contents($filename));
     } elseif (!$throwException) {
         return null;
     } else {

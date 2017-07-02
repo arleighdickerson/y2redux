@@ -11,8 +11,12 @@ return [
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'controllerNamespace' => 'console\controllers',
+    'modules' => [
+        'uploadstream' => [
+            'class' => 'console\modules\uploadstream\Module'
+        ],
+    ],
     'controllerMap' => [
-
         'migrate' => [
             'class' => 'yii\console\controllers\MigrateController',
             'migrationPath' => [
