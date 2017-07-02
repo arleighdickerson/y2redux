@@ -40,12 +40,14 @@ debconf-set-selections <<< "mysql-server-5.6 mysql-server/root_password_again pa
 echo "Done!"
 
 info "Update OS software"
-add-apt-repository -y "deb http://dl.hhvm.com/ubuntu $(lsb_release -sc) main"
+apt-get install -y software-properties-common
+apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0x5a16e7281be7a449
+add-apt-repository "deb http://dl.hhvm.com/ubuntu trusty main"
 apt-get update
 info "Skipping OS software update"
 
 info "Install additional software"
-apt-get install -y git php5-curl php5-cli php5-intl php5-mysqlnd php5-gd php5-fpm nginx mysql-server-5.6 npm software-properties-common hhvm
+apt-get install -y git nginx mysql-server-5.6 hhvm php5-curl php5-cli php5-intl php5-mysqlnd php5-gd php5-fpm npm
 
 info "Link legacy node"
 ln -s /usr/bin/nodejs /usr/bin/node
@@ -61,6 +63,7 @@ sed -i "s/.*bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/my.cnf
 echo "Done!"
 
 info "Configure PHP-FPM"
+apt-get install -y php5-curl php5-cli php5-intl php5-mysqlnd php5-gd php5-fpm
 sed -i 's/user = www-data/user = ubuntu/g' /etc/php5/fpm/pool.d/www.conf
 sed -i 's/group = www-data/group = ubuntu/g' /etc/php5/fpm/pool.d/www.conf
 sed -i 's/owner = www-data/owner = ubuntu/g' /etc/php5/fpm/pool.d/www.conf
@@ -69,6 +72,17 @@ echo "Done!"
 info "Configure NGINX"
 sed -i 's/user www-data/user ubuntu/g' /etc/nginx/nginx.conf
 echo "Done!"
+
+info "Configure HHVM"
+update-rc.d hhvm defaults
+#update-alternatives --install /usr/bin/php php /usr/bin/hhvm 60
+sed -i "s/hhvm.server.port.*/hhvm.server.file_socket=\/var\/run\/hhvm\/sock/g" /etc/hhvm/server.ini
+sed --in-place '/session./d' /etc/hhvm/server.ini
+sed --in-place '/session./d' /etc/hhvm/php.ini
+echo 'RUN_AS_USER="ubuntu"
+RUN_AS_GROUP="ubuntu"
+' >> /etc/default/hhvm
+chown -R ubuntu /var/run/hhvm
 
 info "Enabling site configuration"
 ln -s /app/vagrant/nginx/aws.conf /etc/nginx/sites-enabled/app.conf
@@ -93,3 +107,7 @@ curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
 
 info "Install latest node"
 apt-get install -y nodejs
+
+
+info "Install composer"
+curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer

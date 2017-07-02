@@ -5,5 +5,9 @@ command -v vagrant >/dev/null 2>&1 || { echo >&2 "I can't find a vagrant executa
 
 npm install || { echo >&2 "installation of npm dependencies failed (tried to run `npm install`)."; exit 1; }
 vagrant plugin install hostmanager || { echo >&2 "installation of vagrant hostmanager plugin failed (tried to run `vagrant plugin install hostmanager`)."; exit 1; }
+vagrant plugin install vagrant-aws || { echo >&2 "installation of vagrant-aws
+plugin failed (tried to run `vagrant plugin install vagrant-aws`) continuing...";}
 vagrant box add ubuntu/trusty64 --force || { echo >&2 "installation of the vagrant box failed (tried to run `vagrant box add ubuntu/trusty64 --force`)."; exit 1; }
+vagrant box add dummy https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box --force || { echo >&2 "installation of the vagrant aws dummy box failed (tried to run `vagrant box add dummy https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box --force`) continuing...";}
 vagrant up || { echo >&2 "Vagrant machine encountered an error during startup (tried to run `vagrant up`)."; exit 1; }
+

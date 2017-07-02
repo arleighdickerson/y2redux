@@ -100,7 +100,7 @@ JS
     protected static function defaultClientConfig() {
         return [
             'transport' => CurlTransport::class,
-            'baseUrl' => Url::base(true) . '/assets/render',
+            'baseUrl' => '127.0.0.1:3001',
             'requestConfig' => [
                 'format' => Client::FORMAT_JSON
             ]
