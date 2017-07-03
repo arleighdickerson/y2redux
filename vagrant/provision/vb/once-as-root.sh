@@ -71,14 +71,14 @@ echo "Done!"
 
 info "Configure HHVM"
 update-rc.d hhvm defaults
-#update-alternatives --install /usr/bin/php php /usr/bin/hhvm 60
-sed -i "s/hhvm.server.port.*/hhvm.server.file_socket=\/var\/run\/hhvm\/sock/g" /etc/hhvm/server.ini
+sed -i "s/hhvm.server.port.*/hhvm.server.port=7777/g" /etc/hhvm/server.ini
 sed --in-place '/session./d' /etc/hhvm/server.ini
 sed --in-place '/session./d' /etc/hhvm/php.ini
 echo 'RUN_AS_USER="vagrant"
 RUN_AS_GROUP="vagrant"
 ' >> /etc/default/hhvm
-chown -R vagrant /var/run/hhvm
+chown -R vagrant:vagrant /var/run/hhvm
+chown -R vagrant:vagrant /var/logs/hhvm
 
 info "Configure XDEBUG"
 echo "
@@ -91,12 +91,6 @@ xdebug.remote_host=10.0.2.2
 debug.max_nesting_level=256
 xdebug.idekey=PHPSTORM
 " >> /etc/hhvm/php.ini
-
-info "Enable php7 syntax support on HHVM"
-echo "
-hhvm.php7.all = 1" >> /etc/hhvm/php.ini
-echo "
-hhvm.php7.all = 1" >> /etc/hhvm/server.ini
 
 info "Configure PHP-FPM"
 apt-get install -y php5-curl php5-cli php5-intl php5-mysqlnd php5-gd php5-fpm

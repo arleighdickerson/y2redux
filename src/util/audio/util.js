@@ -1,64 +1,57 @@
 const {encode, decode} = require('msgpack-lite')
-const util = {
-  inherits: function (ctor, superCtor) {
-    ctor.super_ = superCtor;
-    ctor.prototype = Object.create(superCtor.prototype, {
-      constructor: {
-        value: ctor,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-  },
-  extend: function (dest, source) {
-    for (let key in source) {
-      if (source.hasOwnProperty(key)) {
-        dest[key] = source[key];
-      }
+
+export const pack = encode
+export const unpack = data => decode(new Uint8Array(data))
+
+export const nextTick = (() => {
+  let queue = []
+    , dirty = false
+    , fn
+    , hasPostMessage = !!window.postMessage
+    , messageName = 'nexttick';
+
+  function flushQueue() {
+    while (fn = queue.shift()) {
+      fn();
     }
-    return dest;
-  },
-  pack: encode,
-  unpack: data => decode(new Uint8Array(data)),
-  // if node
-  isNode: true,
-  // end node
-  setZeroTimeout: (function (global) {
-    // if node
+    dirty = false;
+  }
 
-    return process.nextTick;
-
-    // end node
-    let timeouts = [];
-    let messageName = 'zero-timeout-message';
-
-    // Like setTimeout, but only takes a function argument.	 There's
-    // no time argument (always zero) and no arguments (you have to
-    // use a closure).
-    function setZeroTimeoutPostMessage(fn) {
-      timeouts.push(fn);
-      global.postMessage(messageName, '*');
-    }
-
-    function handleMessage(event) {
-      if (event.source == global && event.data == messageName) {
-        if (event.stopPropagation) {
+  let trigger = (function () {
+    return hasPostMessage
+      ? function () {
+        window.postMessage(messageName, '*')
+      }
+      : function () {
+        setTimeout(function () {
+          processQueue();
+        }, 0)
+      };
+  }());
+  let processQueue = (function () {
+    return hasPostMessage
+      ? function (event) {
+        if (event.source === window && event.data === messageName) {
           event.stopPropagation();
-        }
-        if (timeouts.length) {
-          timeouts.shift()();
+          flushQueue();
         }
       }
-    }
+      : flushQueue;
+  })();
 
-    if (global.addEventListener) {
-      global.addEventListener('message', handleMessage, true);
-    } else if (global.attachEvent) {
-      global.attachEvent('onmessage', handleMessage);
-    }
-    return setZeroTimeoutPostMessage;
-  }(this))
-};
+  function nextTick(fn) {
+    queue.push(fn);
+    if (dirty) return;
+    dirty = true;
+    trigger();
+  }
 
-module.exports = util;
+  hasPostMessage
+  && (nextTick.listener = window.addEventListener('message', processQueue, true));
+
+  nextTick.removeListener = function () {
+    window.removeEventListener('message', processQueue, true);
+  }
+
+  return nextTick;
+})();

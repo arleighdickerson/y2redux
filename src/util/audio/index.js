@@ -1,4 +1,4 @@
-const {BinaryClient} = require('./client')
+import BinaryClient from './BinaryClient'
 
 let _isRecording = false
 let _client = null
@@ -11,7 +11,7 @@ function setClient(newClient) {
     return
   }
   _client.on('stream', inbound => {
-    nextTime = 0;
+    _nextTime = 0;
     let init = false;
     let audioCache = [];
 
@@ -37,6 +37,9 @@ function setClient(newClient) {
 // Devices
 // ========================================================
 
+let _nextTime = 0
+let _recorder = null
+
 const audioContext = window.AudioContext || window.webkitAudioContext;
 
 const mediaDevices = (() => {
@@ -58,13 +61,13 @@ const mediaDevices = (() => {
       let context = new audioContext();
       let audioInput = context.createMediaStreamSource(stream);
       let bufferSize = 2048;
-      recorder = context.createScriptProcessor(bufferSize, 1, 1);
+      _recorder = context.createScriptProcessor(bufferSize, 1, 1);
       // specify the processing function
-      recorder.onaudioprocess = recorderProcess;
+      _recorder.onaudioprocess = recorderProcess;
       // connect stream to our recorder
-      audioInput.connect(recorder);
+      audioInput.connect(_recorder);
       // connect our recorder to the previous destination
-      recorder.connect(context.destination);
+      _recorder.connect(context.destination);
     })
     .catch(console.error)
   if (!mediaDevices) {
@@ -76,9 +79,6 @@ const mediaDevices = (() => {
 // ========================================================
 // TX
 // ========================================================
-
-let nextTime = 0
-let recorder = null
 
 const recorderProcess = e => {
   let chunk = e.inputBuffer.getChannelData(0);
@@ -99,12 +99,12 @@ const playCache = cache => {
     let source = speakerContext.createBufferSource();
     source.buffer = buffer;
     source.connect(speakerContext.destination);
-    if (nextTime === 0) {
+    if (_nextTime === 0) {
       // add a delay of 0.05 seconds
-      nextTime = speakerContext.currentTime + 0.05;
+      _nextTime = speakerContext.currentTime + 0.05;
     }
-    source.start(nextTime);
-    nextTime += source.buffer.duration;
+    source.start(_nextTime);
+    _nextTime += source.buffer.duration;
   }
 };
 
@@ -131,10 +131,6 @@ export function connect(username) {
 
 export function disconnect() {
   stopRecording()
-  if (_outbound !== null) {
-    _outbound.end()
-    _outbound = null
-  }
   if (_client !== null) {
     _client.close()
   }
@@ -160,6 +156,8 @@ export function stopRecording() {
     console.debug('||| Stop Recording');
     _isRecording = false
     _outbound.end()
+    _outbound.close()
+    _outbound = null
   }
 };
 
@@ -171,5 +169,3 @@ export function cleanup() {
     _client._socket.close()
   }
 }
-
-// window.onbeforeunload = cleanup

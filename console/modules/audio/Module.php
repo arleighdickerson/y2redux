@@ -1,7 +1,7 @@
 <?php
 
 
-namespace console\modules\uploadstream;
+namespace console\modules\audio;
 
 
 use yii\helpers\StringHelper;

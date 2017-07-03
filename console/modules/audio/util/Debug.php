@@ -1,11 +1,11 @@
 <?php
 
 
-namespace console\modules\uploadstream\util;
+namespace console\modules\audio\util;
 
 
-use console\modules\uploadstream\components\BinaryStream;
-use console\modules\uploadstream\components\Codec;
+use console\modules\audio\components\BinaryStream;
+use console\modules\audio\components\Codec;
 use console\stream\WritableResourceStream;
 use Evenement\EventEmitterInterface;
 use MessagePack\Exception\UnpackingFailedException;

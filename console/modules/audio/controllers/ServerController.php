@@ -1,27 +1,28 @@
 <?php
 
 
-namespace console\modules\uploadstream\controllers;
+namespace console\modules\audio\controllers;
 
-use console\modules\uploadstream\components\BinaryStream;
-use console\modules\uploadstream\components\EventEmittingComponent;
-use console\modules\uploadstream\components\StreamComponentAdapter;
-use console\modules\uploadstream\Module;
-use console\modules\uploadstream\util\Debug;
+use console\modules\audio\components\BinaryStream;
+use console\modules\audio\components\EventEmittingComponent;
+use console\modules\audio\components\StreamComponentAdapter;
+use console\modules\audio\util\Debug;
+use Guzzle\Http\Message\RequestInterface;
 use ProxyManager\Factory\AccessInterceptorValueHolderFactory;
 use Ratchet;
 use Ratchet\ConnectionInterface;
 use React;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use yii\base\ErrorException;
-use yii\base\Exception;
 use yii\console\Controller;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 
+
 /**
  * Class ServerController
- * @package console\modules\uploadstream\controllers
- * @property \console\modules\uploadstream\Module $module
+ * @package console\modules\audio\controllers
+ * @property \console\modules\audio\Module $module
  * @property Ratchet\ConnectionInterface[] $conns
  */
 class ServerController extends Controller {
@@ -48,20 +49,21 @@ class ServerController extends Controller {
         $this->_adapter = new StreamComponentAdapter($this->_emitter);
 
         $this->_emitter->on('open', function (ConnectionInterface $conn) {
-            $this->_clients->offsetSet($conn, $this->getQueryStringData($conn, 'username'));
+            $username = $this->getQueryStringData($conn, 'username');
+            $this->_clients->offsetSet($conn, $username ?: 'an0n');
         });
 
-        // forward non-binary messages back to the emitter as actions
         $this->_emitter->on('message', function (ConnectionInterface $from, $msg) {
+            // forward non-binary messages back to the emitter as actions
             $action = Json::decode($msg);
             $this->_emitter->emit($action['type'], [$from, $action]);
         });
 
-        // handle inbound (upload) streams
         $this->_emitter->on('stream', function (ConnectionInterface $conn, BinaryStream $in, array $meta) {
+            // handle inbound (upload) streams
             foreach ($this->_clients as $client) {
                 if ($client !== $conn) {
-                    $out = $this->createOutputStream($conn, $meta);
+                    $out = $this->createOutputStream($client, $meta);
                     $in->pipe($out);
                 }
             }
@@ -77,9 +79,6 @@ class ServerController extends Controller {
             $this->_clients->detach($conn);
         });
 
-        $this->_emitter->onAll(function (ConnectionInterface $conn) {
-        });
-
         if (YII_DEBUG) {
             Debug::sinkServer('wss', $this->_emitter);
         }
@@ -91,11 +90,20 @@ class ServerController extends Controller {
     }
 
     public function actionIndex() {
+        /*
+        $ws = new WsServer($this->_adapter);
+        $ws->disableVersion(0); // old, bad, protocol version
+        $http = new HttpServer($ws);
+        $socket = new React\Socket\Server(loop());
+        $socket->listen(8889, '0.0.0.0');
+        $io = new IoServer($http, $socket, loop());
+        */
+
         $app = new Ratchet\App('localhost', 8889, '0.0.0.0', loop());
         $app->route('/', $this->_adapter, ['*']);
+        $app->route('/who/', new Http($this->_clients), ['*']);
         $app->run();
     }
-
 
     /**
      * Send a readable stream over the wire via a socket connection
@@ -136,5 +144,45 @@ class ServerController extends Controller {
             'wrappedConn.WebSocket.request.url.query.data' . ($key === null ? '' : ".$key"),
             $default
         );
+    }
+}
+
+class Http implements Ratchet\Http\HttpServerInterface {
+    private $_clients;
+
+    function __construct($clients) {
+        $this->_clients = $clients;
+    }
+
+    function getUsernames() {
+        foreach ($this->_clients as $conn) {
+            yield $this->_clients->offsetGet($conn);
+        }
+    }
+
+    function onClose(ConnectionInterface $conn) {
+        $this->close($conn);
+    }
+
+    function onError(ConnectionInterface $conn, \Exception $e) {
+    }
+
+    public function onOpen(ConnectionInterface $conn, RequestInterface $request = null) {
+        $this->sendUsernames($conn);
+    }
+
+    function onMessage(ConnectionInterface $from, $msg) {
+    }
+
+    protected function sendUsernames($conn) {
+        return $this->close($conn, iterator_to_array($this->getUsernames()));
+    }
+
+    protected function close(ConnectionInterface $conn, $data = null, $code = 200) {
+        $response = new JsonResponse(Json::encode($data));
+        $response->setEncodingOptions(320);
+        $response->setStatusCode($code);
+        $conn->send((string)$response);
+        $conn->close();
     }
 }

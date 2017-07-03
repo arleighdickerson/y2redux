@@ -12,8 +12,8 @@ return [
     'bootstrap' => ['log'],
     'controllerNamespace' => 'console\controllers',
     'modules' => [
-        'uploadstream' => [
-            'class' => 'console\modules\uploadstream\Module'
+        'audio' => [
+            'class' => 'console\modules\audio\Module'
         ],
     ],
     'controllerMap' => [

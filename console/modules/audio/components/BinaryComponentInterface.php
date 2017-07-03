@@ -1,6 +1,6 @@
 <?php
 
-namespace console\modules\uploadstream\components;
+namespace console\modules\audio\components;
 
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;

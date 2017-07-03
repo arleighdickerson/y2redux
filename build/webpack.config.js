@@ -73,7 +73,7 @@ webpackConfig.plugins = [
       exclude: ['.gitignore']
     }
   ),
-  new WriteFilePlugin({log:false}),
+  new WriteFilePlugin({log: false}),
   new webpack.DefinePlugin(config.globals),
   new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/),
   new HtmlWebpackPlugin({
@@ -109,7 +109,8 @@ if (__DEV__) {
         screw_ie8: true,
         unused: true,
         dead_code: true,
-        warnings: false
+        warnings: false,
+        drop_console: true
       }
     })
   )
