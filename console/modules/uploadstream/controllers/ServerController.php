@@ -15,6 +15,7 @@ use React;
 use yii\base\ErrorException;
 use yii\base\Exception;
 use yii\console\Controller;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 
 /**
@@ -27,7 +28,7 @@ class ServerController extends Controller {
     /**
      * @var \SplObjectStorage
      */
-    private $_browsers;
+    private $_clients;
 
     /**
      * @var EventEmittingComponent
@@ -42,15 +43,12 @@ class ServerController extends Controller {
     public function init() {
         parent::init();
 
-        $this->_browsers = new \SplObjectStorage();
+        $this->_clients = new \SplObjectStorage();
         $this->_emitter = new EventEmittingComponent();
         $this->_adapter = new StreamComponentAdapter($this->_emitter);
 
-        $this->_emitter->onAll(function (ConnectionInterface $conn) {
-        });
-
         $this->_emitter->on('open', function (ConnectionInterface $conn) {
-            $this->_browsers->attach($conn);
+            $this->_clients->offsetSet($conn, $this->getQueryStringData($conn, 'username'));
         });
 
         // forward non-binary messages back to the emitter as actions
@@ -61,7 +59,7 @@ class ServerController extends Controller {
 
         // handle inbound (upload) streams
         $this->_emitter->on('stream', function (ConnectionInterface $conn, BinaryStream $in, array $meta) {
-            foreach ($this->_browsers as $client) {
+            foreach ($this->_clients as $client) {
                 if ($client !== $conn) {
                     $out = $this->createOutputStream($conn, $meta);
                     $in->pipe($out);
@@ -76,7 +74,7 @@ class ServerController extends Controller {
                     $stream->close();
                 }
             }
-            $this->_browsers->detach($conn);
+            $this->_clients->detach($conn);
         });
 
         $this->_emitter->onAll(function (ConnectionInterface $conn) {
@@ -130,5 +128,13 @@ class ServerController extends Controller {
         $handler->unregister();
         $proxy = $proxyFactory->createProxy($handler, compact('handleException'), []);
         \Yii::$app->set('errorHandler', $proxy);
+    }
+
+    protected function getQueryStringData(ConnectionInterface $conn, $key = null, $default = null) {
+        return ArrayHelper::getValue(
+            $conn,
+            'wrappedConn.WebSocket.request.url.query.data' . ($key === null ? '' : ".$key"),
+            $default
+        );
     }
 }
