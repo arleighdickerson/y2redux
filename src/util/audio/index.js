@@ -15,7 +15,7 @@ function setClient(newClient) {
     let init = false;
     let audioCache = [];
 
-    console.log('>>> Receiving Audio Stream');
+    console.debug('>>> Receiving Audio Stream');
 
     inbound.on('data', data => {
       let array = new Float32Array(data);
@@ -29,7 +29,7 @@ function setClient(newClient) {
       }
     });
 
-    inbound.on('end', () => console.log('||| End of Audio Stream'))
+    inbound.on('end', () => console.debug('||| End of Audio Stream'))
   })
 }
 
@@ -66,9 +66,9 @@ const mediaDevices = (() => {
       // connect our recorder to the previous destination
       recorder.connect(context.destination);
     })
-    .catch(err => console.log("The following error occured: " + err.name))
+    .catch(console.error)
   if (!mediaDevices) {
-    console.log("getUserMedia() not supported.");
+    console.error("getUserMedia() not supported.");
   }
   return mediaDevices
 })()
@@ -149,7 +149,7 @@ export function startRecording() {
     throw new Error("not connected to server")
   }
   if (!isRecording()) {
-    console.log('>>> Start Recording');
+    console.debug('>>> Start Recording');
     _isRecording = true
     _outbound = _client.createStream({data: 'audio'});
   }
@@ -157,7 +157,7 @@ export function startRecording() {
 
 export function stopRecording() {
   if (isRecording()) {
-    console.log('||| Stop Recording');
+    console.debug('||| Stop Recording');
     _isRecording = false
     _outbound.end()
   }
