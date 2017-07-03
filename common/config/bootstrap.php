@@ -1,52 +1,44 @@
 <?php
 
 use ProxyManager\Factory\AccessInterceptorValueHolderFactory;
-use React\ChildProcess\Process;
 use React\EventLoop\LoopInterface;
+use yii\helpers\ArrayHelper;
 
+// ========================================================
+//  set aliases
+// ========================================================
 Yii::setAlias('@project', dirname(dirname(__DIR__)));
 Yii::setAlias('@common', dirname(__DIR__));
 Yii::setAlias('@frontend', dirname(dirname(__DIR__)) . '/frontend');
 Yii::setAlias('@backend', dirname(dirname(__DIR__)) . '/backend');
 Yii::setAlias('@console', dirname(dirname(__DIR__)) . '/console');
+Yii::setAlias('@helpers', dirname(dirname(__DIR__)) . '/helpers');
 Yii::setAlias('@src', dirname(dirname(__DIR__)) . '/src');
 Yii::setAlias('@secrets', dirname(dirname(__DIR__)) . '/secrets');
 
+// ========================================================
+//  add custom helpers
+// ========================================================
+Yii::$classMap['yii\helpers\Json'] = '@helpers/Json.php';
+Yii::$classMap['yii\helpers\ArrayHelper'] = '@helpers/ArrayHelper.php';
+
+// ========================================================
+//  configure dependency injection container
+// ========================================================
 Yii::$container
     ->setSingleton(LoopInterface::class, function () {
         return React\EventLoop\Factory::create();
     })
     ->setSingleton('loop', React\EventLoop\LoopInterface::class)
-    ->set(Process::class, function ($container, $params, $config) {
-        $cwd = alias('@project');
-        $env = null;
-        $options = [];
-        extract($config, EXTR_OVERWRITE);
-        /** @var string $cmd */
-        $process = new Process($cmd, $cwd, $env, $options);
-        /** @var AccessInterceptorValueHolderFactory $factory */
-        if (version_compare(phpversion(), '5.5', '<=')) { // invoke hax if php <= 5.5
-            $factory = $container->get(AccessInterceptorValueHolderFactory::class);
-            $getPipes = (new \ReflectionClass($process))->getProperty('pipes');
-            $process = $factory->createProxy($process, [], [
-                    'start' => function () use ($getPipes, $process) {
-                        $getPipes->setAccessible(true);
-                        $pipes =& $getPipes->getValue($process);
-                        // fixes SEGFAULT on php <= 5.5
-                        stream_set_read_buffer($pipes[1], 1);
-                        stream_set_read_buffer($pipes[2], 1);
-                        $getPipes->setAccessible(false);
-                    }
-                ]
-            );
-        }
-        return $process;
-    })
     ->setSingleton(AccessInterceptorValueHolderFactory::class, function ($container, $params, $config) {
         // creates proxies for sweet monkey patches
         return new AccessInterceptorValueHolderFactory(ArrayHelper::getValue($params, '0', null));
     });
 
+
+// ========================================================
+//  define global helper functions
+// ========================================================
 
 /**
  * get a reference to the application context

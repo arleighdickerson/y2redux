@@ -18,13 +18,11 @@
     "yiisoft/yii2-httpclient": "*",
     "paquettg/php-html-parser": "^1.7",
     "guzzlehttp/guzzle": "~6.0",
-    "react/child-process": "^0.4.3",
-    "wyrihaximus/react-child-process-promise": "^2.0",
-    "react/stream": "*",
     "rybakit/msgpack": "^0.2.2",
-    "cboden/ratchet": "0.3.*",
-    "ratchet/pawl": "0.1.*",
-    "ocramius/proxy-manager": "^1.0"
+    "cboden/ratchet": "^0.3.6",
+    "ratchet/pawl": "^0.2.3",
+    "ocramius/proxy-manager": "^1.0",
+    "react/stream": "@dev"
   },
   "require-dev": {
     "yiisoft/yii2-debug": "*",

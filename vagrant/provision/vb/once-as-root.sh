@@ -92,6 +92,12 @@ debug.max_nesting_level=256
 xdebug.idekey=PHPSTORM
 " >> /etc/hhvm/php.ini
 
+info "Enable php7 syntax support on HHVM"
+echo "
+hhvm.php7.all = 1" >> /etc/hhvm/php.ini
+echo "
+hhvm.php7.all = 1" >> /etc/hhvm/server.ini
+
 info "Configure PHP-FPM"
 apt-get install -y php5-curl php5-cli php5-intl php5-mysqlnd php5-gd php5-fpm
 sed -i 's/user = www-data/user = vagrant/g' /etc/php5/fpm/pool.d/www.conf

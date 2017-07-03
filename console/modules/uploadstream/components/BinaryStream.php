@@ -118,17 +118,22 @@ class BinaryStream implements DuplexStreamInterface {
         if (!$this->isWritable()) {
             return;
         }
-        $this->_ended = true;
-        $this->_readable = false;
-        if ($data !== null) {
-            $this->_write(BinaryStream::PAYLOAD_DATA, $data);
+        $ended = $this->_ended;
+        $this->onEnd();
+        if (!$ended) {
+            if ($data !== null) {
+                $this->_write(BinaryStream::PAYLOAD_DATA, $data);
+            }
+            $this->_write(BinaryStream::PAYLOAD_END);
         }
-        $this->_write(BinaryStream::PAYLOAD_END);
     }
 
     public function close() {
+        $closed = $this->_closed;
         $this->onClose();
-        $this->_write(BinaryStream::PAYLOAD_CLOSE);
+        if (!$closed) {
+            $this->_write(BinaryStream::PAYLOAD_CLOSE);
+        }
     }
 
     // =======================================================

@@ -8,9 +8,12 @@ use console\modules\uploadstream\components\EventEmittingComponent;
 use console\modules\uploadstream\components\StreamComponentAdapter;
 use console\modules\uploadstream\Module;
 use console\modules\uploadstream\util\Debug;
+use ProxyManager\Factory\AccessInterceptorValueHolderFactory;
 use Ratchet;
 use Ratchet\ConnectionInterface;
 use React;
+use yii\base\ErrorException;
+use yii\base\Exception;
 use yii\console\Controller;
 use yii\helpers\Json;
 
@@ -18,7 +21,7 @@ use yii\helpers\Json;
  * Class ServerController
  * @package console\modules\uploadstream\controllers
  * @property \console\modules\uploadstream\Module $module
- * @property Ratchet\ConnectionInterface[] $connections
+ * @property Ratchet\ConnectionInterface[] $conns
  */
 class ServerController extends Controller {
     /**
@@ -43,7 +46,7 @@ class ServerController extends Controller {
         $this->_emitter = new EventEmittingComponent();
         $this->_adapter = new StreamComponentAdapter($this->_emitter);
 
-        $this->_emitter->onAll(function (ConnectionInterface $connection) {
+        $this->_emitter->onAll(function (ConnectionInterface $conn) {
         });
 
         $this->_emitter->on('open', function (ConnectionInterface $conn) {
@@ -65,15 +68,28 @@ class ServerController extends Controller {
                 }
             }
         });
-        $this->_emitter->on('close', function (ConnectionInterface $connection) {
+        $this->_emitter->on('close', function (ConnectionInterface $conn) {
+            foreach ($this->_adapter->getStreams() as $stream) {
+                /** @var BinaryStream $stream */
+                if ($stream->getClient() === $conn) {
+                    $stream->end();
+                    $stream->close();
+                }
+            }
+            $this->_browsers->detach($conn);
         });
 
-        $this->_emitter->onAll(function (ConnectionInterface $connection) {
+        $this->_emitter->onAll(function (ConnectionInterface $conn) {
         });
 
         if (YII_DEBUG) {
             Debug::sinkServer('wss', $this->_emitter);
         }
+
+        loop()->nextTick(function () {
+            $this->patchErrorHandler();
+        });
+
     }
 
     public function actionIndex() {
@@ -86,24 +102,33 @@ class ServerController extends Controller {
     /**
      * Send a readable stream over the wire via a socket connection
      *
-     * @param ConnectionInterface $connection
+     * @param ConnectionInterface $conn
      * @param array|null $meta
      *
      * @return BinaryStream
      */
-    protected function createOutputStream(ConnectionInterface $connection, array $meta) {
+    protected function createOutputStream(ConnectionInterface $conn, array $meta) {
         $create = true;
         return $this->_adapter->attachStream(
-            new BinaryStream($connection, $this->_adapter->nextId(), compact('create', 'meta'))
+            new BinaryStream($conn, $this->_adapter->nextId(), compact('create', 'meta'))
         );
     }
 
-    /**
-     * @param ConnectionInterface $connection
-     * @param null $identity
-     * @return bool
-     */
-    public function isAuthorized(ConnectionInterface $connection, &$identity = null) {
-        return true;
+    protected function patchErrorHandler() {
+        /** @var AccessInterceptorValueHolderFactory $proxyFactory */
+        $proxyFactory = \Yii::$container->get(AccessInterceptorValueHolderFactory::class);
+        $handler = \Yii::$app->errorHandler;
+        $handleException = function ($proxy, $instance, $method, $params, & $returnEarly) {
+            $exception = null;
+            extract($params, EXTR_OVERWRITE);
+            static $messageIncludes = 'unable to shutdown socket';
+            if ($exception instanceof ErrorException && strpos($exception->getMessage(), $messageIncludes) !== false) {
+                $returnEarly = true;
+                return;
+            }
+        };
+        $handler->unregister();
+        $proxy = $proxyFactory->createProxy($handler, compact('handleException'), []);
+        \Yii::$app->set('errorHandler', $proxy);
     }
 }

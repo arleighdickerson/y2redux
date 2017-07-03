@@ -54,7 +54,7 @@ trait BinaryHandlers {
 
     public function nextId() {
         $id = $this->_nextId;
-        $this->_nextId += 2;
+        $this->_nextId = $id + 2;
         return $id;
     }
 
