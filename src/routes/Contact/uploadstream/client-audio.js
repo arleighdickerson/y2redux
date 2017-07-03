@@ -1,15 +1,14 @@
 function createController(client) {
-  ss(socket).on('audio', function (stream) {
-    console.debug(stream);
+  client.on('stream', function (stream) {
     controller.nextTime = 0;
-    let init = false;
-    let audioCache = [];
+    var init = false;
+    var audioCache = [];
 
     console.log('>>> Receiving Audio Stream');
 
     stream.on('data', function (data) {
-      let array = new Float32Array(data.buffer)
-      let buffer = controller.speakerContext.createBuffer(1, 2048, 44100);
+      var array = new Float32Array(data);
+      var buffer = controller.speakerContext.createBuffer(1, 2048, 44100);
       buffer.copyToChannel(array, 0);
 
       audioCache.push(buffer);
@@ -25,16 +24,14 @@ function createController(client) {
     });
 
   });
-
-
-  let controller = {};
+  var controller = {};
 
 // TX -------------------------------------------------------------------------
   controller.recording = false;
 
-  let audioContext = window.AudioContext || window.webkitAudioContext;
+  var audioContext = window.AudioContext || window.webkitAudioContext;
 
-  let mediaDevices = navigator.mediaDevices ||
+  var mediaDevices = navigator.mediaDevices ||
     ((navigator.mozGetUserMedia || navigator.webkitGetUserMedia) ? {
       getUserMedia: function (c) {
         return new Promise(function (y, n) {
@@ -54,9 +51,9 @@ function createController(client) {
   });
 
   controller.device.then(function (stream) {
-    let context = new audioContext();
-    let audioInput = context.createMediaStreamSource(stream);
-    let bufferSize = 2048;
+    var context = new audioContext();
+    var audioInput = context.createMediaStreamSource(stream);
+    var bufferSize = 2048;
     // create a javascript node
     controller.recorder = context.createScriptProcessor(bufferSize, 1, 1);
     // specify the processing function
@@ -67,21 +64,17 @@ function createController(client) {
     controller.recorder.connect(context.destination);
   });
 
-  controller.device.catch(console.error)
-
-  function convertFloat32ToInt16(buffer) {
-    l = buffer.length;
-    buf = new Int16Array(l);
-    while (l--) {
-      buf[l] = Math.min(1, buffer[l]) * 0x7FFF;
-    }
-    return buf.buffer;
-  }
+  controller.device.catch(function (err) {
+    console.log("The following error occured: " + err.name);
+  });
 
   controller.recorderProcess = function (e) {
-    let chunk = e.inputBuffer.getChannelData(0);
+    var left = e.inputBuffer.getChannelData(0);
     if (controller.recording === true) {
-      controller.stream.write(new ss.Buffer(chunk.buffer))
+      // var chunk = convertFloat32ToInt16(left);
+      var chunk = left;
+      console.dir(chunk);
+      controller.stream.write(chunk);
     }
   };
 
@@ -89,10 +82,10 @@ function createController(client) {
 
     if (controller.recording === false) {
       console.log('>>> Start Recording');
+
       //open binary stream
-      controller.stream = createStream()
+      controller.stream = client.createStream({data: 'audio'});
       controller.recording = true;
-      ss(socket).emit('audio', controller.stream)
     }
 
   };
@@ -113,8 +106,8 @@ function createController(client) {
 
   controller.playCache = function (cache) {
     while (cache.length) {
-      let buffer = cache.shift();
-      let source = controller.speakerContext.createBufferSource();
+      var buffer = cache.shift();
+      var source = controller.speakerContext.createBufferSource();
       source.buffer = buffer;
       source.connect(controller.speakerContext.destination);
       if (controller.nextTime == 0) {
@@ -126,9 +119,12 @@ function createController(client) {
       controller.nextTime += source.buffer.duration;
     }
   };
+
+  return controller
 }
 module.exports = new Promise((resolve, reject) => {
-  require('./connection')()
+  const acquire = require('./connection')
+  acquire()
     .then(client => resolve(createController(client)))
-    .error(e => reject(e))
+    .catch(e => reject(e))
 })

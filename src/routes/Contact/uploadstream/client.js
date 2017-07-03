@@ -227,7 +227,7 @@ BinaryClient.prototype._receiveStream = function (streamId) {
   return binaryStream;
 };
 
-BinaryClient.prototype.createStream = function (meta) {
+BinaryClient.prototype.createStream = function (meta = {}) {
   if (this._socket.readyState !== WebSocket.OPEN) {
     throw new Error('Client is not yet connected or has closed');
     return;

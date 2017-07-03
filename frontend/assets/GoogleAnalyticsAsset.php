@@ -11,7 +11,7 @@ class GoogleAnalyticsAsset extends AssetBundle {
     public $id;
 
     public function registerAssetFiles($view) {
-        if (($id = $this->getId())) {
+        if (!YII_ENV_DEV && ($id = $this->getId())) {
             $view->registerJs($this->getJsFragment(), View::POS_HEAD);
         }
     }
@@ -27,6 +27,6 @@ JS;
     }
 
     public function getId() {
-        return $this->id ?: secret('google.analytics.id', false);
+        return $this->id !== null ? $this->id : secret('google.analytics.id', false);
     }
 }

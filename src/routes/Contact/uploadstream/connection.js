@@ -37,7 +37,7 @@ const acquire = function (store) {
     promise = new Promise((resolve, reject) => {
       if (clients === false) {
         try {
-          clients = getConnections('/contact/ws/')
+          clients = getConnections('wss://' + location.host + '/ws')
         } catch (e) {
           reject(e)
         }

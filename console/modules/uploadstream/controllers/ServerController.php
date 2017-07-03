@@ -58,6 +58,12 @@ class ServerController extends Controller {
 
         // handle inbound (upload) streams
         $this->_emitter->on('stream', function (ConnectionInterface $conn, BinaryStream $in, array $meta) {
+            foreach ($this->_browsers as $client) {
+                if ($client !== $conn) {
+                    $out = $this->createOutputStream($conn, $meta);
+                    $in->pipe($out);
+                }
+            }
         });
         $this->_emitter->on('close', function (ConnectionInterface $connection) {
         });
@@ -72,7 +78,7 @@ class ServerController extends Controller {
 
     public function actionIndex() {
         $app = new Ratchet\App('localhost', 8889, '0.0.0.0', loop());
-        $app->route('/ws', $this->_adapter,['*']);
+        $app->route('/', $this->_adapter, ['*']);
         $app->run();
     }
 
