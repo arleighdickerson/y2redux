@@ -17,6 +17,9 @@ function getItems(forUser) {
       ['Y2Redux', 'progs/y2redux'],
       ['React/Redux/Express Boilerplate', 'progs/react-redux-express'],
       ['Yii2 MySQL XA Transactions', 'progs/xa']
+    ]],
+    ['Demos', [
+      ['Ratchet Stream', 'audio'],
     ]]
   ];
   return items

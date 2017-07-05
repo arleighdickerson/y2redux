@@ -1,11 +1,12 @@
 import React from "react";
 import HeaderContainer from "../../containers/HeaderContainer";
 import {connect} from "react-redux";
-import {logout} from "../../store/user"
+import {logout} from "../../store/user";
 import Growl from "../../components/Growl";
-import PropTypes from 'prop-types'
-import getHeaderItems from './header-items'
-import './CoreLayout.less'
+import PropTypes from "prop-types";
+import getHeaderItems from "./header-items";
+import "../../styles/toolkit.less";
+import "./CoreLayout.less";
 
 const UserOptions = ({handleLogout}) => (
   <div
@@ -59,30 +60,30 @@ class CoreLayout extends React.Component {
     const {children, user, handleLogout} = this.props
 
     return (
-      <div className="with-top-navbar">
-        <Growl/>
-        <HeaderContainer brand='[Y2Redux]' avatar={DEFAULT_AVATAR} items={getHeaderItems(user)}>{/*
-         <a className="app-notifications" href="notifications/index.html">
-         <span className="icon icon-bell"/>
-         </a>*/}
-          {user &&
-          <li>
-            <a className="navbar-username" href="javascript:;" onClick={this.toggleUserOptions}>{user.username}</a>
-          </li>
-          }{user &&
-          <li>
-            <button className="btn btn-default navbar-btn navbar-btn-avatar" onClick={this.toggleUserOptions}>
-              <img className="img-circle" src={DEFAULT_AVATAR}/>
-            </button>
-            {this.state.showUserOptions &&
-            <UserOptions {...{handleLogout}}/>
+        <div className="with-top-navbar">
+          <Growl/>
+          <HeaderContainer brand='[Y2Redux]' avatar={DEFAULT_AVATAR} items={getHeaderItems(user)}>{/*
+           <a className="app-notifications" href="notifications/index.html">
+           <span className="icon icon-bell"/>
+           </a>*/}
+            {user &&
+            <li>
+              <a className="navbar-username" href="javascript:;" onClick={this.toggleUserOptions}>{user.username}</a>
+            </li>
+            }{user &&
+            <li>
+              <button className="btn btn-default navbar-btn navbar-btn-avatar" onClick={this.toggleUserOptions}>
+                <img className="img-circle" src={DEFAULT_AVATAR}/>
+              </button>
+              {this.state.showUserOptions &&
+              <UserOptions {...{handleLogout}}/>
+              }
+            </li>
             }
-          </li>
-          }
 
-        </HeaderContainer>
-        {children}
-      </div>
+          </HeaderContainer>
+          {children}
+        </div>
     )
   }
 }

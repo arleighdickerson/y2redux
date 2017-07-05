@@ -8,5 +8,7 @@ return [
     'skills/<name>' => 'default/skill',
     'progs' => 'default/prog',
     'progs/<name>' => 'default/prog',
-    'api/<action:(contact)>' => 'api/default/<action>',
+    'audio' => 'audio/main',
+    'audio/login' => 'audio/login',
+    'audio/surprise' => 'audio/surprise'
 ];

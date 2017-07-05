@@ -5,6 +5,7 @@ namespace frontend\controllers;
 
 use frontend\widgets\React;
 use yii\web\Controller;
+use yii\web\Response;
 
 /**
  * Define actions in subclasses that return the redux state tree to be rendered into the layout.
@@ -24,11 +25,8 @@ abstract class IsomorphicController extends Controller {
      */
     public function runAction($id, $params = []) {
         $result = parent::runAction($id, $params);
-        if ($result === null) {
-            $result = [];
-        }
-        if (is_array($result)) {
-            $this->view->initialState = $result;
+        if (response()->format === Response::FORMAT_HTML && !is_string($result)) {
+            $this->view->initialState = $result ?: [];
             return $this->renderRoot();
         }
         return $result;

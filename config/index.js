@@ -35,7 +35,7 @@ const config = {
     plugins: ['transform-runtime'],
     presets: ['es2015', 'react', 'stage-0']
   },
-  compiler_devtool: 'eval-source-map',
+  compiler_devtool: 'source-map',
   compiler_hash_type: 'hash',
   compiler_fail_on_warning: false,
   compiler_quiet: false,

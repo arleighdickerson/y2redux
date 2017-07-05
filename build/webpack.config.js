@@ -7,7 +7,6 @@ const debug = require('debug')('app:webpack:config')
 const WriteFilePlugin = require('write-file-webpack-plugin')
 const CleanPlugin = require('clean-webpack-plugin');
 const AssetsPlugin = require('assets-webpack-plugin')
-const StatsWriterPlugin = require("webpack-stats-plugin").StatsWriterPlugin
 const IsomorphicTools = require('webpack-isomorphic-tools/plugin')
 
 const paths = config.utils_paths
@@ -85,7 +84,7 @@ webpackConfig.plugins = [
     minify: {
       collapseWhitespace: true
     }
-  }),
+  })
 ]
 
 if (__DEV__) {
@@ -111,6 +110,12 @@ if (__DEV__) {
         dead_code: true,
         warnings: false,
         drop_console: true
+      },
+      mangle: {
+        except: []
+      },
+      output: {
+        comments: false
       }
     })
   )

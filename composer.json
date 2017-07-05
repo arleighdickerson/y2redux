@@ -22,7 +22,8 @@
     "cboden/ratchet": "^0.3.6",
     "ratchet/pawl": "^0.2.3",
     "ocramius/proxy-manager": "^1.0",
-    "react/stream": "@dev"
+    "react/stream": "@dev",
+    "nubs/random-name-generator": "^2.1"
   },
   "require-dev": {
     "yiisoft/yii2-debug": "*",

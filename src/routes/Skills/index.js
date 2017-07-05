@@ -1,8 +1,6 @@
 import React from 'react'
 const _ = require('lodash')
 
-const PAGE_MAP = {}
-
 export const Index = (store) => ({
   path: 'skills',
   getComponent (nextState, cb) {

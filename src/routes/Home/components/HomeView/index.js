@@ -1,5 +1,4 @@
 import React from "react";
-import "./HomeView.less";
 import GitHubFeed from './GithubActivity'
 import {Skills} from './Portfolio'
 import {Link} from "react-router";

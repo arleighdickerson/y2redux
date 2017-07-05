@@ -1,15 +1,13 @@
 const SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
 
-const agent = require('superagent-use')(
-  require('superagent-promise')(
-    require('superagent'),
-    Promise
+module.exports = function () {
+  const agent = require('superagent-use')(
+    require('superagent-promise')(
+      require('superagent'),
+      Promise
+    )
   )
-)
-
-export default agent
-  .use(require('superagent-prefix')('/api'))
-  .use(request => {
+  agent.use(request => {
     if (!SAFE_METHODS.includes(request.method)) {
       const send = Object.getPrototypeOf(request).send
       request.send = data => {
@@ -21,3 +19,6 @@ export default agent
     }
     return request.send({}).accept('json').type('json')
   })
+  return agent
+}
+

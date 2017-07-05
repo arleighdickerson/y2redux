@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 import CoreLayout from "../layouts/CoreLayout";
 import Home from "./Home";
 import LoginRoute from "./Login";
@@ -7,7 +7,7 @@ import ResetPasswordRoute from "./ResetPassword";
 import SignupRoute from "./Signup";
 import * as Skills from "./Skills";
 import * as Progs from "./Progs";
-import {Alert} from 'react-bootstrap'
+import * as Audio from "./Audio";
 
 const _ = require('lodash')
 
@@ -15,9 +15,6 @@ const DEFAULT_LAYOUT = ({children, ...props}) => {
   return (
     <CoreLayout {...props}>
       <div className="container p-t-md">
-        <Alert bsStyle="danger">
-          This section is <strong>Under Construction!</strong>
-        </Alert>
         {children}
       </div>
     </CoreLayout>
@@ -54,6 +51,8 @@ export const createRoutes = (store) => {
       Skills.Detail(store),
       Progs.Index(store),
       Progs.Detail(store),
+      Audio.Login(store),
+      Audio.Main(store),
     ]
   }
 }
