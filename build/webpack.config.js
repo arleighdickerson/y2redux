@@ -29,7 +29,7 @@ const webpackConfig = {
   node: {
     net: 'empty',
     tls: 'empty',
-    dns: 'empty',
+    dns:'empty',
     fs: 'empty'
   }
 }
@@ -96,6 +96,9 @@ if (__DEV__) {
 } else if (__PROD__) {
   debug('Enable plugins for isomorphic rendering.')
   webpackConfig.plugins.unshift(
+    new StatsWriterPlugin({
+      filename: config.utils_paths.base('webpack-stats.json')
+    }),
     new AssetsPlugin(),
     new IsomorphicTools({assets: {}})
   )
