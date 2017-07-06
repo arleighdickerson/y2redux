@@ -1,4 +1,4 @@
-import BinaryClient from './BinaryClient'
+import {BinaryClient} from "./BinaryClient";
 
 let _isRecording = false
 let _client = null

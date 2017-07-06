@@ -1,6 +1,6 @@
+import {EventEmitter} from 'events'
+import {BinaryStream as Stream} from './BinaryStream'
 import * as util from './util'
-const {EventEmitter} = require('events')
-import BinaryStream from './BinaryStream'
 
 export const PAYLOAD_RESERVED = 0;
 export const PAYLOAD_NEW_STREAM = 1;
@@ -10,14 +10,13 @@ export const PAYLOAD_RESUME = 4;
 export const PAYLOAD_END = 5;
 export const PAYLOAD_CLOSE = 6;
 
-
-export class BinaryClient extends EventEmitter {
+export class BinaryClient extends EventEmitter{
   constructor(socket) {
     super()
 
     const self = this
 
-    this.streams = {}
+    this.streams = {};
     this._nextId = 0;
 
     this._socket = socket
@@ -109,7 +108,7 @@ export class BinaryClient extends EventEmitter {
   }
 
   _receiveStream(streamId) {
-    const stream = new BinaryStream(this._socket, streamId, false);
+    const stream = new Stream(this._socket, streamId, false);
     stream.on('close', () => delete this.streams[streamId])
     this.streams[streamId] = stream;
     return stream
@@ -121,7 +120,7 @@ export class BinaryClient extends EventEmitter {
     }
     const streamId = this._nextId;
     this._nextId += 2;
-    const stream = new BinaryStream(this._socket, streamId, true, meta);
+    const stream = new Stream(this._socket, streamId, true, meta);
     stream.on('close', () => delete this.streams[streamId])
     this.streams[streamId] = stream
     return stream
@@ -131,5 +130,3 @@ export class BinaryClient extends EventEmitter {
     this._socket.close();
   }
 }
-
-export default BinaryClient

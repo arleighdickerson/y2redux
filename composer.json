@@ -23,7 +23,8 @@
     "ratchet/pawl": "^0.2.3",
     "ocramius/proxy-manager": "^1.0",
     "react/stream": "@dev",
-    "nubs/random-name-generator": "^2.1"
+    "nubs/random-name-generator": "^2.1",
+    "voryx/thruway": "dev-master"
   },
   "require-dev": {
     "yiisoft/yii2-debug": "*",

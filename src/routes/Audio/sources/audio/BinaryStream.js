@@ -1,15 +1,15 @@
-import {Stream} from 'stream'
-import * as util from './util'
+import * as util from "./util";
+import {Stream} from "stream";
 import {
-  PAYLOAD_NEW_STREAM,
+  PAYLOAD_CLOSE,
   PAYLOAD_DATA,
-  PAYLOAD_PAUSE,
-  PAYLOAD_RESUME,
   PAYLOAD_END,
-  PAYLOAD_CLOSE
-} from './BinaryClient'
+  PAYLOAD_NEW_STREAM,
+  PAYLOAD_PAUSE,
+  PAYLOAD_RESUME
+} from "./BinaryClient";
 
-export default class BinaryStream extends Stream {
+export class BinaryStream extends Stream {
   constructor(socket, id, create, meta) {
     super()
     this.id = id

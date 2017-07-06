@@ -90,14 +90,20 @@ Vagrant.configure(2) do |config|
     override.ssh.username = "ubuntu"
     override.ssh.private_key_path = options['aws_private_key']
     # sync: folder 'y2redux' (host machine) -> folder '/app' (guest machine)
-    override.vm.synced_folder './', '/app', owner: 'ubuntu', group: 'ubuntu', rsync__chown: false, rsync__exclude: [
+    override.vm.synced_folder './', '/app', owner: 'ubuntu', group: 'ubuntu', rsync__chown: true, rsync__exclude: [
         ".git",
         ".vagrant",
         "frontend/runtime",
         "backend/runtime",
         "console/runtime",
-        "frontend/web/assets",
+        # "frontend/web/assets",
         "backend/web/assets",
+		"frontend/config/main-local.php",
+		"backend/config/main-local.php",
+		"console/config/main-local.php",
+		"frontend/config/params-local.php",
+		"backend/config/params-local.php",
+		"console/config/params-local.php",
         "vendor",
         "node_modules"
      ]
@@ -117,3 +123,4 @@ Vagrant.configure(2) do |config|
   # machine name (for guest machine console)
   config.vm.hostname = options['machine_name']
 end
+

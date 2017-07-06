@@ -6,6 +6,7 @@ namespace console\modules\audio\controllers;
 use console\modules\audio\components\BinaryStream;
 use console\modules\audio\components\EventEmittingComponent;
 use console\modules\audio\components\StreamComponentAdapter;
+use console\modules\audio\transport\TransportProvider;
 use console\modules\audio\util\Debug;
 use Guzzle\Http\Message\RequestInterface;
 use ProxyManager\Factory\AccessInterceptorValueHolderFactory;
@@ -13,6 +14,8 @@ use Ratchet;
 use Ratchet\ConnectionInterface;
 use React;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Thruway\Peer\Client;
+use Thruway\Peer\Router;
 use yii\base\ErrorException;
 use yii\console\Controller;
 use yii\helpers\ArrayHelper;
@@ -90,19 +93,15 @@ class ServerController extends Controller {
     }
 
     public function actionIndex() {
-        /*
-        $ws = new WsServer($this->_adapter);
-        $ws->disableVersion(0); // old, bad, protocol version
-        $http = new HttpServer($ws);
-        $socket = new React\Socket\Server(loop());
-        $socket->listen(8889, '0.0.0.0');
-        $io = new IoServer($http, $socket, loop());
-        */
+        $router = new Router(loop());
+        $transportProvider = new TransportProvider("127.0.0.1", 8889);
+        $router->addTransportProvider($transportProvider);
+        $router->addInternalClient(new Client('realm1'));
 
         $app = new Ratchet\App('localhost', 8889, '0.0.0.0', loop());
-        $app->route('/', $this->_adapter, ['*']);
-        $app->route('/who/', new Http($this->_clients), ['*']);
-        $app->run();
+        $app->route('/', $this->_adapter);
+        $app->route('/wamp/', $transportProvider);
+        $router->start();
     }
 
     /**

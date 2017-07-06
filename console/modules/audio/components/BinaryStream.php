@@ -175,4 +175,3 @@ class BinaryStream implements DuplexStreamInterface {
         return $dest;
     }
 }
-
