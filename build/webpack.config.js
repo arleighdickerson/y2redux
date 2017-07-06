@@ -30,7 +30,7 @@ const webpackConfig = {
   node: {
     net: 'empty',
     tls: 'empty',
-    dns: 'empty',
+    dns:'empty',
     fs: 'empty'
   }
 }
@@ -73,7 +73,7 @@ webpackConfig.plugins = [
       exclude: ['.gitignore']
     }
   ),
-  new WriteFilePlugin({log:false}),
+  new WriteFilePlugin({log: false}),
   new webpack.DefinePlugin(config.globals),
   new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/),
   new HtmlWebpackPlugin({
@@ -85,7 +85,7 @@ webpackConfig.plugins = [
     minify: {
       collapseWhitespace: true
     }
-  }),
+  })
 ]
 
 if (__DEV__) {
@@ -97,6 +97,9 @@ if (__DEV__) {
 } else if (__PROD__) {
   debug('Enable plugins for isomorphic rendering.')
   webpackConfig.plugins.unshift(
+    new StatsWriterPlugin({
+      filename: config.utils_paths.base('webpack-stats.json')
+    }),
     new AssetsPlugin(),
     new IsomorphicTools({assets: {}})
   )
@@ -109,7 +112,14 @@ if (__DEV__) {
         screw_ie8: true,
         unused: true,
         dead_code: true,
-        warnings: false
+        warnings: false,
+        drop_console: true
+      },
+      mangle: {
+        except: []
+      },
+      output: {
+        comments: false
       }
     })
   )
