@@ -1,8 +1,8 @@
 import React from "react";
-import GitHubFeed from './GithubActivity'
-import {Skills} from './Portfolio'
+import GitHubFeed from "./GithubActivity";
+import {Skills} from "./Portfolio";
 import {Link} from "react-router";
-import * as defaults from './Defaults'
+import * as defaults from "./Defaults";
 
 require('font-awesome/less/font-awesome.less')
 
@@ -52,122 +52,127 @@ export const HomeView = (props) => {
                 </div>
               </div>
             </section>
-
             <section className="latest section">
               <div className="section-inner">
                 <h2 className="heading">Latest Projects</h2>
-                <div className="content">
-                  <div className="content">
-                    <div className="item row">
-                      <a className="col-md-4 col-sm-4 col-xs-12"
-                         href="https://www.aeaweb.org" target="_blank"> <img
+                <div className="item featured text-center">
+                  <h3 className="title"><a
+                    href="https://github.com/arleighdickerson/y2redux"
+                    target="_blank">Y2Redux - Boilerplate</a></h3>
+                  <p className="summary">An application template built with Yii2, React, and Redux.</p>
+                  <div className="featured-image">
+                    <a href="#" target="_blank">
+                      <img
                         className="img-responsive project-image"
-                        src={getImgSrc('projects/project-aeaweb.jpg')} alt="project name"/>
-                      </a>
-
-                      <div className="desc col-md-8 col-sm-8 col-xs-12">
-                        <h3 className="title">
-                          <a href="https://www.aeaweb.org">
-                            American Economic Association Website
-                          </a>
-                        </h3>
-                        <p>
-                          I built the data systems and administrative gui for a full-fledged content management system.
-                          Features I worked on include content revision control, uploaded asset storage and management,
-                          data auditing, site search, user authentication and authorization, integration with legacy
-                          applications, and a message passing system for the load-balanced application instances.
-                        </p>
-                      </div>
+                        src={require('../../../../static/img/hhvm-1024.png')}
+                        alt="project name"
+                      />
+                    </a>
+                    <div className="ribbon">
+                      <div className="text">New</div>
                     </div>
-                    <div className="item row">
-                      <a className="col-md-4 col-sm-4 col-xs-12"
-                         href="https://github.com/arleighdickerson/MatasanoCryptoChallenge" target="_blank"> <img
-                        className="img-responsive project-image"
-                        src={getImgSrc('projects/project-crypto-challenge.jpg')} alt="Matasano Crypto Challenge"/>
+                  </div>
+
+                  {/*
+                   <div className="desc text-left">
+                   <p>You can promote your main project here. Suspendisse in tellus dolor. Vivamus a tortor eu turpis
+                   pharetra consequat quis non metus. Aliquam aliquam, orci eu suscipit pellentesque, mauris dui
+                   tincidunt enim, eget iaculis ante dolor non turpis.</p>
+                   <p>Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut
+                   aliquid ex ea commodi consequatur. At vero eos et accusamus et iusto odio dignissimos ducimus.</p>
+                   </div>
+                   */}
+
+                  <a className="btn btn-lg btn-featured"
+                     href="https://github.com/arleighdickerson/y2redux"
+                     target="_blank"><span className="icon icon-github"/> View Source</a>
+                </div>
+                <hr className="divider"/>
+                <div className="item featured row" style={{marginBottom: -30}}>
+                  <a className="col-md-4 col-sm-4 col-xs-12"
+                     href="https://www.aeaweb.org" target="_blank"> <img
+                    className="img-responsive project-image center-block"
+                    src={getImgSrc('aea.png')} alt="AEA" style={{maxHeight: 190}}/>
+                  </a>
+
+                  <div className="desc col-md-8 col-sm-8 col-xs-12">
+                    <h3 className="title">
+                      <a href="https://www.aeaweb.org">
+                        Website Overhaul
                       </a>
-
-                      <div className="desc col-md-8 col-sm-8 col-xs-12">
-                        <h3 className="title">
-                          <a href="https://github.com/arleighdickerson/MatasanoCryptoChallenge">
-                            Matasano Crypto Challenge
-                          </a>
-                        </h3>
-
-                        <p>
-                          The <a href="http://cryptopals.com">Matasano Crypto Challenge</a> is a sequence of
-                          cryptography exercises written by the cool folks at <a
-                          href="http://matasano.com/">Matasano</a>.
-                          I have been working through the challenges in <a
-                          href="http://scala-lang.com">Scala</a>. You can view my progress via my <a
-                          href="https://github.com/arleighdickerson/MatasanoCryptoChallenge">github
-                          repository</a>.
-                        </p>
-                      </div>
-                    </div>
-                    <div className="item row">
-                      <a className="col-md-4 col-sm-4 col-xs-12" href="assets/pdf/ArleighDickersonPoster.pdf"
-                         target="_blank"> <img className="img-responsive project-image"
-                                               src={getImgSrc('projects/project-capstone.png')}
-                                               alt="Bijective Algorithms"/>
-                      </a>
-
-                      <div className="desc col-md-8 col-sm-8 col-xs-12">
-                        <h3 className="title">
-                          Mathematics Capstone
-                        </h3>
-                        <p>For my mathematics capstone, I studied proofs of the <a
-                          href="http://wikipedia.org/wiki/Hook_length_formula">Hook Length Formula</a>. I
-                          wrote a <a href="assets/pdf/ArleighDickersonCapstone.pdf">paper</a> and made a <a
-                            href="assets/pdf/ArleighDickersonPoster.pdf">poster</a>. I also wrote some <a
-                            href="https://github.com/arleighdickerson/BijectiveAlgorithms">Mathematica
-                            programs</a> to investigate the inner workings of the algorithms used in the
-                          Novelli Pak Stoyanovskii proof.</p>
-                      </div>
-                    </div>
+                    </h3>
+                    <p>
+                      I built the data systems and administrative gui for a full-fledged content management system.
+                      Features I worked on include content revision control, uploaded asset storage and management,
+                      data auditing, site search, user authentication and authorization, integration with legacy
+                      applications, and a message passing system for the load-balanced application instances.
+                    </p>
                   </div>
                 </div>
               </div>
             </section>
 
-            {/*
-             <section className="projects section">
-             <div className="section-inner">
-             <h2 className="heading">Other Projects</h2>
-             <div className="content">
-             <div className="item">
-             <h3 className="title"><a href="#">Project Title Cras Lacus</a></h3>
-             <p className="summary">Provide a brief description of your project. Ut enim ad minima veniam, quis
-             nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi
-             consequatu.</p>
-             <p><a className="more-link"
-             href="http://themes.3rdwavemedia.com/website-templates/responsive-bootstrap-theme-for-mobile-apps-delta/"
-             target="_blank"><i className="fa fa-external-link"/> Find out more</a></p>
-             </div>
-             <div className="item">
-             <h3 className="title"><a href="#">Project Title Cras eget lacus</a> <span
-             className="label label-theme">Open Source</span></h3>
-             <p className="summary">Provide a brief description of your project. Maecenas ornare ultricies risus,
-             in fermentum augue consectetur in. Vestibulum vitae mauris iaculis, sollicitudin velit in,
-             molestie nulla. </p>
-             <p><a className="more-link"
-             href="http://themes.3rdwavemedia.com/website-templates/responsive-bootstrap-theme-for-mobile-apps-delta/"
-             target="_blank"><i className="fa fa-external-link"/> View on GitHub</a></p>
-             </div>
-             <div className="item">
-             <h3 className="title"><a href="#">Project Title Maecenas Ornare</a> <span
-             className="label label-theme">Open Source</span></h3>
-             <p className="summary">Provide a brief description of your project. Lorem ipsum dolor sit amet,
-             consectetur adipiscing elit. In vel purus enim. Etiam tortor felis, fermentum ac ultrices sed.</p>
-             <p><a className="more-link"
-             href="http://themes.3rdwavemedia.com/website-templates/responsive-bootstrap-theme-for-mobile-apps-delta/"
-             target="_blank"><i className="fa fa-external-link"/> View on GitHub</a></p>
-             </div>
-             <a className="btn btn-cta-secondary" href="#">More on CoderWall <i
-             className="fa fa-chevron-right"/></a>
-             </div>
-             </div>
-             </section>
-             */}
+            <section className="projects section">
+              <div className="section-inner">
+                <h2 className="heading">Other Projects</h2>
+                <div className="content">
+                  <div className="item">
+                    <h3 className="title">
+                      <a href="https://github.com/arleighdickerson/ratchet-stream">
+                        Binary Data Streams Over a PHP Websocket Server
+                      </a>
+                    </h3>
+                    <p className="summary">
+                      It turns out that with a little bit of monkey patching, <a href="http://socketo.me">ratchet</a>
+                      servers
+                      can coerced into accepting binary frames.
+                      I took that idea and ran with it to make a real-time API that uses
+                      an event-driven <a href="https://github.com/reactphp/stream">stream</a> implementation.
+                    </p>
+                  </div>
+                  <div className="item">
+                    <h3 className="title">
+                      <a href="https://github.com/arleighdickerson/yii2-xa-transactions">
+                        Yii2 Active Record Support for MySQL XA Transactions
+                      </a>
+                    </h3>
+                    <p className="summary">
+                      At my job, we have <em>lots</em> of MySQL connection instances floating around.
+                      A common problem has been wrapping operations on different connections into a single transactional
+                      unit. To alleviate this, I ended up writing a Yii2 extension that adds Active Record support for
+                      XA transactions.
+                      Using XA Transactions, we can do two-phase commits when we need atomic data operations across
+                      connections.
+                    </p>
+                  </div>
+                  <div className="item">
+                    <h3 className="title">
+                      <a href="https://github.com/arleighdickerson/MatasanoCryptoChallenge">
+                        Crypto Challenge
+                      </a>
+                    </h3>
+                    <p className="summary">
+                      The <a href="http://cryptopals.com">Matasano Crypto Challenge</a> is a sequence of cryptography
+                      exercises.
+                    </p>
+                  </div>
+                  <div className="item">
+                    <h3 className="title">
+                      <a href="assets/pdf/ArleighDickersonCapstone.pdf">
+                        Mathematics Capstone
+                      </a>
+                    </h3>
+                    <p className="summary">For my mathematics capstone, I studied proofs of the <a
+                      href="http://wikipedia.org/wiki/Hook_length_formula">Hook Length Formula</a>. I
+                      wrote a <a href="assets/pdf/ArleighDickersonCapstone.pdf">paper</a> and made a <a
+                        href="assets/pdf/ArleighDickersonPoster.pdf">poster</a>. I also wrote some <a
+                        href="https://github.com/arleighdickerson/BijectiveAlgorithms">Mathematica
+                        programs</a> to investigate the inner workings of the algorithms used in the
+                      Novelli Pak Stoyanovskii proof.</p>
+                  </div>
+                </div>
+              </div>
+            </section>
             {/*
              <section className="experience section">
              <div className="section-inner">

@@ -1,6 +1,10 @@
 @import "../../styles/toolkit.less";
 @import "../../styles/application.less";
 
+.btn-featured{
+  .button-outline-variant(rgb(28, 37, 41))
+}
+
 /*
  * Template Name: Developer - Responsive Website Template for Developers
  * Version: 1.5
@@ -243,9 +247,10 @@ iframe {
 }
 
 .latest .item .project-image:hover {
-  -webkit-opacity: 0.8;
-  -moz-opacity: 0.8;
-  opacity: 0.8;
+  .opacity(0.8);
+}
+.latest .item .project-image {
+  .transition(all 0.4s ease-in-out);
 }
 
 .latest .divider {
@@ -304,7 +309,7 @@ iframe {
   text-align: center;
   text-transform: uppercase;
   color: #fff;
-  background-color: @brand-info;
+  background-color: @brand-primary;
   -webkit-transform: rotate(45deg) translate3d(0, 0, 0);
   -moz-transform: rotate(45deg) translate3d(0, 0, 0);
   -ms-transform: rotate(45deg) translate3d(0, 0, 0);
@@ -456,7 +461,7 @@ iframe {
 
 .skills .skillset .level-bar-inner {
   height: 15px;
-  background: @brand-info;
+  background: @brand-primary;
 }
 
 /* Testimonials section */

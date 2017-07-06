@@ -6,17 +6,11 @@ const transformArray = array => _.isArray(array[1])
 function getItems(forUser) {
   const items = [
     ['Home', '/'],
-    ['Contact', 'contact'],
     ['Skills', [
       ['NodeJS', 'skills/nodejs'],
       ['ReactJS/Flux', 'skills/reactjs'],
       ['Yii2/PHP', 'skills/yii2php'],
       ['MySQL', 'skills/mysql'],
-    ]],
-    ['Progs', [
-      ['Y2Redux', 'progs/y2redux'],
-      ['React/Redux/Express Boilerplate', 'progs/react-redux-express'],
-      ['Yii2 MySQL XA Transactions', 'progs/xa']
     ]],
     ['Demos', [
       ['Ratchet Stream', 'audio'],
