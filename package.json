@@ -14,7 +14,7 @@
   },
   "betterScripts": {
     "clean": {
-      "command": "rm frontend/runtime/webpack/* && rm frontend/web/assets/*.*"
+      "command": "rm -f frontend/runtime/webpack/* && rm -f frontend/web/assets/*.*"
     },
     "compile": {
       "command": "node ./bin/compile.js",

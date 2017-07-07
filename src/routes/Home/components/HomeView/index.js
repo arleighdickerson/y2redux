@@ -6,7 +6,6 @@ import * as defaults from "./Defaults";
 
 require('font-awesome/less/font-awesome.less')
 
-const PROFILE_IMG = require('../../../../static/img/profile.png')
 const getImgSrc = name => require('../../../../static/img/' + name)
 
 export const HomeView = (props) => {
@@ -26,7 +25,7 @@ export const HomeView = (props) => {
     <div className="site-index">
       <header className="header">
         <div className="container">
-          <img className="profile-image img-responsive pull-left" src={PROFILE_IMG} alt="Arleigh Dickerson"/>
+          <img className="profile-image img-responsive pull-left" src={getImgSrc('profile.png')} alt="Arleigh Dickerson"/>
           <div className="profile-content pull-left">
             <h1 className="name">Arleigh Dickerson</h1>
             <h2 className="desc">Application Developer</h2>
@@ -231,10 +230,10 @@ export const HomeView = (props) => {
             <section className="github section">
               <div className="section-inner">
                 <GitHubFeed
-                  fullName={'Arleigh Dickerson'} // Provide Full Name as displayed on GitHub
-                  username={'arleighdickerson'} // Provide User Name as displayed on Guthub
+                  fullName='Arleigh Dickerson' // Provide Full Name as displayed on GitHub
+                  username='arleighdickerson' // Provide User Name as displayed on Guthub
                   profileUrl='https://www.github.com/arleighdickerson'
-                  avatarUrl={'https://github.com/arleighdickerson.png'} // Provide the avatar url of your github profile
+                  avatarUrl='https://github.com/arleighdickerson.png' // Provide the avatar url of your github profile
                   events={[]}
                 />
               </div>

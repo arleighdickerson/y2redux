@@ -7,12 +7,14 @@ const debug = require('debug')('app:webpack:config')
 const WriteFilePlugin = require('write-file-webpack-plugin')
 const CleanPlugin = require('clean-webpack-plugin');
 const AssetsPlugin = require('assets-webpack-plugin')
+const StatsWriterPlugin = require("webpack-stats-plugin").StatsWriterPlugin
 const IsomorphicTools = require('webpack-isomorphic-tools/plugin')
 
 const paths = config.utils_paths
 const __DEV__ = config.globals.__DEV__
 const __PROD__ = config.globals.__PROD__
 const __TEST__ = config.globals.__TEST__
+
 
 debug('Creating configuration.')
 const webpackConfig = {
@@ -29,7 +31,7 @@ const webpackConfig = {
   node: {
     net: 'empty',
     tls: 'empty',
-    dns:'empty',
+    dns: 'empty',
     fs: 'empty'
   }
 }
@@ -42,16 +44,7 @@ webpackConfig.entry = {
   app: __DEV__
     ? [APP_ENTRY].concat(`webpack-hot-middleware/client?path=${config.compiler_public_path}__webpack_hmr`)
     : [APP_ENTRY],
-  vendor: config.compiler_vendors.concat([
-    'open-sans-fontface',
-    'roboto-fontface',
-    paths.client('styles/fonts/toolkit-entypo.eot'),
-    paths.client('styles/fonts/toolkit-entypo.ttf'),
-    paths.client('styles/fonts/toolkit-entypo.woff'),
-    paths.client('styles/fonts/toolkit-entypo.woff2'),
-    paths.client('styles/toolkit.less'),
-    paths.client('styles/application.less')
-  ])
+  vendor: config.compiler_vendors,
 }
 
 // ------------------------------------
@@ -84,7 +77,7 @@ webpackConfig.plugins = [
     minify: {
       collapseWhitespace: true
     }
-  })
+  }),
 ]
 
 if (__DEV__) {
@@ -96,9 +89,6 @@ if (__DEV__) {
 } else if (__PROD__) {
   debug('Enable plugins for isomorphic rendering.')
   webpackConfig.plugins.unshift(
-    new StatsWriterPlugin({
-      filename: config.utils_paths.base('webpack-stats.json')
-    }),
     new AssetsPlugin(),
     new IsomorphicTools({assets: {}})
   )
@@ -114,9 +104,7 @@ if (__DEV__) {
         warnings: false,
         drop_console: true
       },
-      mangle: {
-        except: []
-      },
+      mangle: true,
       output: {
         comments: false
       }
@@ -128,7 +116,7 @@ if (__DEV__) {
 if (!__TEST__) {
   webpackConfig.plugins.push(
     new webpack.optimize.CommonsChunkPlugin({
-      names: ['vendor'],
+      names: ['vendor']
     })
   )
 }
@@ -152,7 +140,7 @@ webpackConfig.module.loaders.push({
 }, {
   test: /\.css$/,
   loader: 'style!css?modules',
-  exclude: [config.utils_paths.base('node_modules')],
+  exclude: [/(node_modules)/],
 })
 // ------------------------------------
 // Style Loaders
@@ -187,6 +175,14 @@ webpackConfig.module.loaders.push({
     'postcss'
   ]
 })
+
+webpackConfig.sassLoader = {
+  includePaths: paths.client('styles')
+}
+
+webpackConfig.lessLoader = {
+  includePaths: paths.client('styles'),
+}
 
 webpackConfig.postcss = [
   cssnano({
@@ -235,10 +231,7 @@ webpackConfig.module.loaders.push(
   },
   {
     test: /\.(png|jpg|gif)$/,
-    loader: 'url-loader?limit=8192'
-  }, {
-    test: /\.md$/,
-    loader: 'null'
+    loader: 'file-loader?name=img/[name].[ext]&limit=8192'
   }
 )
 /* eslint-enable */
@@ -266,5 +259,7 @@ if (__DEV__) {
     })
   )
 }
+
+webpackConfig.plugins.push(new StatsWriterPlugin())
 
 module.exports = webpackConfig
