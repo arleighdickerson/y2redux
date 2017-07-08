@@ -3,23 +3,13 @@
 
 namespace console\modules\audio\controllers;
 
-use console\modules\audio\components\BinaryStream;
-use console\modules\audio\components\EventEmittingComponent;
-use console\modules\audio\components\StreamComponentAdapter;
-use console\modules\audio\transport\TransportProvider;
-use console\modules\audio\util\Debug;
-use Guzzle\Http\Message\RequestInterface;
+use console\modules\audio\channels\ControlChannel;
+use console\modules\audio\channels\DataChannel;
 use ProxyManager\Factory\AccessInterceptorValueHolderFactory;
 use Ratchet;
-use Ratchet\ConnectionInterface;
 use React;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Thruway\Peer\Client;
-use Thruway\Peer\Router;
 use yii\base\ErrorException;
 use yii\console\Controller;
-use yii\helpers\ArrayHelper;
-use yii\helpers\Json;
 
 
 /**
@@ -29,94 +19,22 @@ use yii\helpers\Json;
  * @property Ratchet\ConnectionInterface[] $conns
  */
 class ServerController extends Controller {
-    /**
-     * @var \SplObjectStorage
-     */
-    private $_clients;
-
-    /**
-     * @var EventEmittingComponent
-     */
-    private $_emitter;
-
-    /**
-     * @var StreamComponentAdapter
-     */
-    private $_adapter;
+    private $_control;
+    private $_data;
 
     public function init() {
         parent::init();
-
-        $this->_clients = new \SplObjectStorage();
-        $this->_emitter = new EventEmittingComponent();
-        $this->_adapter = new StreamComponentAdapter($this->_emitter);
-
-        $this->_emitter->on('open', function (ConnectionInterface $conn) {
-            $username = $this->getQueryStringData($conn, 'username');
-            $this->_clients->offsetSet($conn, $username ?: 'an0n');
-        });
-
-        $this->_emitter->on('message', function (ConnectionInterface $from, $msg) {
-            // forward non-binary messages back to the emitter as actions
-            $action = Json::decode($msg);
-            $this->_emitter->emit($action['type'], [$from, $action]);
-        });
-
-        $this->_emitter->on('stream', function (ConnectionInterface $conn, BinaryStream $in, array $meta) {
-            // handle inbound (upload) streams
-            foreach ($this->_clients as $client) {
-                if ($client !== $conn) {
-                    $out = $this->createOutputStream($client, $meta);
-                    $in->pipe($out);
-                }
-            }
-        });
-        $this->_emitter->on('close', function (ConnectionInterface $conn) {
-            foreach ($this->_adapter->getStreams() as $stream) {
-                /** @var BinaryStream $stream */
-                if ($stream->getClient() === $conn) {
-                    $stream->end();
-                    $stream->close();
-                }
-            }
-            $this->_clients->detach($conn);
-        });
-
-        if (YII_DEBUG) {
-            Debug::sinkServer('wss', $this->_emitter);
-        }
-
-        loop()->nextTick(function () {
-            $this->patchErrorHandler();
-        });
-
+        $this->_data = new DataChannel();
+        $this->_control = new ControlChannel('realm1', loop());
     }
 
     public function actionIndex() {
-        $router = new Router(loop());
-        $transportProvider = new TransportProvider("127.0.0.1", 8889);
-        $router->addTransportProvider($transportProvider);
-        $router->addInternalClient(new Client('realm1'));
-
         $app = new Ratchet\App('localhost', 8889, '0.0.0.0', loop());
-        $app->route('/', $this->_adapter);
-        $app->route('/wamp/', $transportProvider);
-        $router->start();
-    }
+        $app->route('/audio/ctl/', $this->_control->getComponent(), ['*']);
+        $app->route('/audio/data/', $this->_data->getComponent(), ['*']);
 
-    /**
-     * Send a readable stream over the wire via a socket connection
-     *
-     * @param ConnectionInterface $conn
-     * @param array|null $meta
-     *
-     * @return BinaryStream
-     */
-    protected function createOutputStream(ConnectionInterface $conn, array $meta) {
-        $create = true;
-        return $this->_adapter->attachStream(
-            new BinaryStream($conn, $this->_adapter->nextId(), compact('create', 'meta'))
-        );
+        $this->patchErrorHandler();
+        loop()->run();
     }
 
     protected function patchErrorHandler() {
@@ -136,52 +54,7 @@ class ServerController extends Controller {
         $proxy = $proxyFactory->createProxy($handler, compact('handleException'), []);
         \Yii::$app->set('errorHandler', $proxy);
     }
-
-    protected function getQueryStringData(ConnectionInterface $conn, $key = null, $default = null) {
-        return ArrayHelper::getValue(
-            $conn,
-            'wrappedConn.WebSocket.request.url.query.data' . ($key === null ? '' : ".$key"),
-            $default
-        );
-    }
 }
 
-class Http implements Ratchet\Http\HttpServerInterface {
-    private $_clients;
-
-    function __construct($clients) {
-        $this->_clients = $clients;
-    }
-
-    function getUsernames() {
-        foreach ($this->_clients as $conn) {
-            yield $this->_clients->offsetGet($conn);
-        }
-    }
-
-    function onClose(ConnectionInterface $conn) {
-        $this->close($conn);
-    }
-
-    function onError(ConnectionInterface $conn, \Exception $e) {
-    }
-
-    public function onOpen(ConnectionInterface $conn, RequestInterface $request = null) {
-        $this->sendUsernames($conn);
-    }
-
-    function onMessage(ConnectionInterface $from, $msg) {
-    }
-
-    protected function sendUsernames($conn) {
-        return $this->close($conn, iterator_to_array($this->getUsernames()));
-    }
-
-    protected function close(ConnectionInterface $conn, $data = null, $code = 200) {
-        $response = new JsonResponse(Json::encode($data));
-        $response->setEncodingOptions(320);
-        $response->setStatusCode($code);
-        $conn->send((string)$response);
-        $conn->close();
-    }
-}
+//class Http implements Ratchet\Http\HttpServerInterface {
+//}

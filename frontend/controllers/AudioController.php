@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use Nubs\RandomNameGenerator;
+use yii\db\Exception;
 use yii\helpers\ArrayHelper;
 use yii\web\Response;
 
@@ -23,7 +24,7 @@ class AudioController extends IsomorphicController {
             response()->format = Response::FORMAT_JSON;
             $username = post('username', false);
             return $username
-                ? $this->handleUsernameSelected($username)
+                ? $this->setUsername($username)
                 : response()->setStatusCode(422, "no username in post");
         }
         $this->view->title = 'Front';
@@ -44,11 +45,12 @@ class AudioController extends IsomorphicController {
             session()->open();
             session()->set('audio', compact('username'));
         }
+        response()->setStatusCode(200);
     }
 
     protected function getUsername() {
         return session()->isActive
-            ? ArrayHelper::getValue(session()->get('audio', []), 'username')
+            ? ArrayHelper::getValue(session(), 'audio.username')
             : null;
     }
 }

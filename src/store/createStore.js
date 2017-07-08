@@ -1,5 +1,6 @@
 import {applyMiddleware, compose, createStore} from "redux";
 import thunk from "redux-thunk";
+import promiseMiddleware from "redux-promise-middleware";
 import makeRootReducer from "./reducers";
 import {syncHistory} from "redux-simple-router";
 
@@ -9,8 +10,9 @@ export default (history, initialState = {}) => {
   // Middleware Configuration
   // ======================================================
   const middleware = [
+    promiseMiddleware(),
     routerMiddleware,
-    thunk
+    thunk,
   ]
 
   // ======================================================

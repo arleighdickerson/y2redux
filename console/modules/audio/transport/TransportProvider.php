@@ -22,6 +22,7 @@ use Thruway\Message\HelloMessage;
 use Thruway\Serializer\JsonSerializer;
 use Thruway\Session;
 use Thruway\Transport\AbstractRouterTransportProvider;
+use yii\helpers\ArrayHelper;
 
 /**
  * Class TransportProvider
@@ -48,6 +49,7 @@ class TransportProvider extends AbstractRouterTransportProvider implements Messa
      * @var \SplObjectStorage
      */
     private $sessions;
+
 
     /**
      * Constructor

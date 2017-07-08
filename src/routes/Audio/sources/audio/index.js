@@ -1,4 +1,5 @@
 import {BinaryClient} from "./BinaryClient";
+const _ = require('lodash')
 
 let _isRecording = false
 let _client = null
@@ -7,30 +8,29 @@ let _outbound = null
 function setClient(newClient) {
   disconnect()
   _client = newClient
-  if (!_client) {
-    return
+  if (_client) {
+    _client.on('stream', inbound => {
+      _nextTime = 0;
+      let init = false;
+      let audioCache = [];
+
+      console.debug('>>> Receiving Audio Stream');
+
+      inbound.on('data', data => {
+        let array = new Float32Array(data);
+        let buffer = speakerContext.createBuffer(1, 2048, 44100);
+        buffer.copyToChannel(array, 0);
+        audioCache.push(buffer);
+        // make sure we put at least 5 chunks in the buffer before starting
+        if ((init === true) || ((init === false) && (audioCache.length > 5))) {
+          init = true;
+          playCache(audioCache);
+        }
+      });
+      inbound.on('end', () => console.debug('||| End of Audio Stream'))
+    })
   }
-  _client.on('stream', inbound => {
-    _nextTime = 0;
-    let init = false;
-    let audioCache = [];
-
-    console.debug('>>> Receiving Audio Stream');
-
-    inbound.on('data', data => {
-      let array = new Float32Array(data);
-      let buffer = speakerContext.createBuffer(1, 2048, 44100);
-      buffer.copyToChannel(array, 0);
-      audioCache.push(buffer);
-      // make sure we put at least 5 chunks in the buffer before starting
-      if ((init === true) || ((init === false) && (audioCache.length > 5))) {
-        init = true;
-        playCache(audioCache);
-      }
-    });
-
-    inbound.on('end', () => console.debug('||| End of Audio Stream'))
-  })
+  return _client
 }
 
 // ========================================================
@@ -117,15 +117,17 @@ export function isConnected() {
 }
 
 export function connect(username) {
-  disconnect()
   return new Promise((resolve, reject) => {
+    if (isConnected()) {
+      resolve(_client)
+      return
+    }
+    disconnect()
     const queryString = username ? ('?username=' + username) : ''
-    const url = 'wss://' + location.host + '/ws' + queryString
+    const url = 'wss://' + location.host + '/ws/audio/data/' + queryString
     const ws = new WebSocket(url)
-    const client = new BinaryClient(ws)
-    client.on('open', () => resolve(true))
-    client.on('error', e => reject(e))
-    setClient(client)
+    ws.onopen = () => resolve(setClient(new BinaryClient(ws)))
+    ws.onerror = reject
   })
 }
 
@@ -141,17 +143,15 @@ export function isRecording() {
 }
 
 export function startRecording() {
-  if (!isConnected()) {
-    throw new Error("not connected to server")
-  }
   if (!isRecording()) {
     console.debug('>>> Start Recording');
-    _isRecording = true
     _outbound = _client.createStream({data: 'audio'});
+    _isRecording = true
   }
-};
+}
 
 export function stopRecording() {
+  let out = _outbound
   if (isRecording()) {
     console.debug('||| Stop Recording');
     _isRecording = false
@@ -159,13 +159,29 @@ export function stopRecording() {
     _outbound.close()
     _outbound = null
   }
-};
+  return out
+}
 
 export function cleanup() {
   if (_outbound !== null) {
     _outbound.end()
+    _outbound.close()
   }
   if (_client !== null) {
     _client._socket.close()
   }
+}
+
+export function getMeta() {
+  return {
+    stream: _.pick(_outbound, [
+      'id',
+      'writable',
+      'readable',
+      'paused',
+      '_closed',
+      '_ended'
+    ])
+  }
+
 }

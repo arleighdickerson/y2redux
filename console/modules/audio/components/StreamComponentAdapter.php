@@ -36,4 +36,8 @@ class StreamComponentAdapter implements StreamComponentInterface, BinaryComponen
     function onStream(ConnectionInterface $connection, BinaryStream $stream, array $meta) {
         $this->_component->onStream($connection, $stream, $meta);
     }
+
+    protected function unwrap(){
+        return $this->_component;
+    }
 }

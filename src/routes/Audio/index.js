@@ -27,6 +27,7 @@ export const Main = (store) => ({
     if (!_.get(store.getState(), 'audio.username')) {
       return replace('/audio/login')
     }
+    require('./sources').setStore(store)
   },
   getComponent (nextState, cb) {
     require.ensure([], (require) => {
