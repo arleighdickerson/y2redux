@@ -9,8 +9,6 @@ use yii\base\Exception;
 use yii\base\Widget;
 use yii\bootstrap\Html;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Json;
-use yii\helpers\Url;
 use yii\httpclient\Client;
 use yii\httpclient\CurlTransport;
 
@@ -64,16 +62,6 @@ class React extends Widget {
      */
     protected function getContent() {
         if (ArrayHelper::getValue(Yii::$app->params, 'isomorphic', false)) {
-            if (class_exists('V8Js')) {
-                $v8 = new \V8Js();
-                $initialState = Json::encode($this->view->initialState);
-                $script = <<<JS
-___INITIAL_STATE__ = $initialState;
-JS
-                    . PHP_EOL
-                    . file_get_contents(alias('@runtime/webpack/isomorphic.js'));
-                return $v8->executeString($script);
-            }
             $client = new Client($this->clientConfig);
             $response = $client->post('', [
                 'userAgent' => $_SERVER['HTTP_USER_AGENT'],
@@ -100,7 +88,7 @@ JS
     protected static function defaultClientConfig() {
         return [
             'transport' => CurlTransport::class,
-            'baseUrl' => '127.0.0.1:3001',
+            'baseUrl' => YII_ENV_DEV ? '10.0.2.2:3001' : '127.0.0.1:3001',
             'requestConfig' => [
                 'format' => Client::FORMAT_JSON
             ]

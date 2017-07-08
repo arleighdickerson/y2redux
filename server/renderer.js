@@ -1,6 +1,4 @@
 require('babel-register')()
-require('ignore-styles').default()
-
 
 const config = require('../config')
 Object.assign(global, config.globals)

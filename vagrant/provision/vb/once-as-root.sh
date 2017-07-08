@@ -49,16 +49,7 @@ apt-get update
 apt-get upgrade -y
 
 info "Install additional software"
-apt-get install -y git nginx mysql-server-5.6 hhvm php5-curl php5-cli php5-intl php5-mysqlnd php5-gd php5-fpm npm
-
-info "Link legacy node"
-ln -s /usr/bin/nodejs /usr/bin/node
-
-info "Install nodemon"
-npm install -g nodemon
-
-info "Update npm"
-npm install -g npm
+apt-get install -y git nginx mysql-server-5.6 hhvm php5-curl php5-cli php5-intl php5-mysqlnd php5-gd php5-fpm
 
 info "Configure MySQL"
 sed -i "s/.*bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/my.cnf
@@ -108,11 +99,25 @@ mysql -uroot <<< "CREATE DATABASE y2redux"
 mysql -uroot <<< "CREATE DATABASE y2redux_test"
 echo "Done!"
 
-info "Add latest node mirror"
-curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
-
-info "Install latest node"
-apt-get install -y nodejs
-
 info "Install composer"
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+info "Install dev SSL keys"
+mkdir -p /etc/nginx/conf.d/certs
+cd /etc/nginx/conf.d/certs
+openssl genrsa -out "devcert.key" 2048
+openssl req -new -key "devcert.key" -out "devcert.csr" <<< "
+
+
+
+
+
+
+
+
+
+
+"
+openssl x509 -req -days 365 -in "devcert.csr" -signkey "devcert.key" -out "devcert.crt"
+cd -
+

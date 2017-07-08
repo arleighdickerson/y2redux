@@ -6,8 +6,6 @@ const config = require('../config')
 const debug = require('debug')('app:webpack:config')
 const WriteFilePlugin = require('write-file-webpack-plugin')
 const CleanPlugin = require('clean-webpack-plugin');
-const AssetsPlugin = require('assets-webpack-plugin')
-const StatsWriterPlugin = require("webpack-stats-plugin").StatsWriterPlugin
 const IsomorphicTools = require('webpack-isomorphic-tools/plugin')
 
 const paths = config.utils_paths
@@ -45,6 +43,10 @@ webpackConfig.entry = {
     ? [APP_ENTRY].concat(`webpack-hot-middleware/client?path=${config.compiler_public_path}__webpack_hmr`)
     : [APP_ENTRY],
   vendor: config.compiler_vendors,
+  fonts: [
+    'roboto-fontface',
+    'open-sans-fontface'
+  ],
 }
 
 // ------------------------------------
@@ -71,7 +73,6 @@ webpackConfig.plugins = [
   new HtmlWebpackPlugin({
     template: paths.client('index.html'),
     hash: false,
-    favicon: paths.client('static/favicon.ico'),
     filename: '../../runtime/webpack/index.html',
     inject: 'body',
     minify: {
@@ -88,10 +89,8 @@ if (__DEV__) {
   )
 } else if (__PROD__) {
   debug('Enable plugins for isomorphic rendering.')
-  webpackConfig.plugins.unshift(
-    new AssetsPlugin(),
-    new IsomorphicTools({assets: {}})
-  )
+  webpackConfig.plugins.unshift(new IsomorphicTools(require('./isomorphic.config')))
+
   debug('Enable plugins for production (OccurenceOrder, Dedupe & UglifyJS).')
   webpackConfig.plugins.push(
     new webpack.optimize.OccurrenceOrderPlugin(),
@@ -181,7 +180,9 @@ webpackConfig.sassLoader = {
 }
 
 webpackConfig.lessLoader = {
-  includePaths: paths.client('styles'),
+  includePaths: [
+    paths.client('styles')
+  ],
 }
 
 webpackConfig.postcss = [
@@ -259,7 +260,5 @@ if (__DEV__) {
     })
   )
 }
-
-webpackConfig.plugins.push(new StatsWriterPlugin())
 
 module.exports = webpackConfig

@@ -20,12 +20,12 @@ info "Configure composer"
 composer config --global github-oauth.github.com ${github_token}
 echo "Done!"
 
-info "Install plugins for composer"
-composer global require "fxp/composer-asset-plugin:^1.3.1" --no-progress
+#info "Install plugins for composer"
+#composer global require "fxp/composer-asset-plugin:^1.3.1" --no-progress
 
-info "Install composer dependencies"
-cd /app
-composer --no-progress --ignore-platform-reqs --prefer-dist install
+#info "Install composer dependencies"
+#cd /app
+#composer --no-progress --ignore-platform-reqs --prefer-dist install
 
 info "Init project"
 ./init --env=Development --overwrite=y
