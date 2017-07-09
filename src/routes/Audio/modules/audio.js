@@ -94,7 +94,8 @@ const ACTION_HANDLERS = {
 const initialState = {
   username: null,
   isConnected: false,
-  isRecording: false
+  isRecording: false,
+  users: [],
 }
 
 export default function audioReducer(state = initialState, action) {

@@ -11,6 +11,8 @@ const mapDispatchToProps = ({
 })
 
 
-const mapStateToProps = (state) => ({})
+const mapStateToProps = ({audio}) => ({
+  users: audio.users
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(MainView)

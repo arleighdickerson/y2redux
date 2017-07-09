@@ -52,7 +52,7 @@ class InitialStateBehavior extends Behavior {
      */
     public function setInitialState($tree) {
         $valid = is_array($tree);
-        if ($this->_initialState === null) {
+        if ($this->initialState === null) {
             $valid = $valid || is_callable($tree);
         }
         if (!$valid) {

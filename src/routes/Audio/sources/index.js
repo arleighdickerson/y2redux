@@ -1,6 +1,7 @@
 import * as audio from "./audio";
 import * as ctl from "./ctl";
 import * as user from "./user";
+import {runQueue} from "../../../util/promise";
 const _ = require('lodash')
 
 let _store = null
@@ -31,23 +32,10 @@ export function isConnected() {
 }
 
 export function connect() {
-  return new Promise((resolve, reject) => {
-    const promises = [
-      ctl.connect(getUsername()),
-      audio.connect(getUsername())
-    ]
-    const shift = (accum = {}) => {
-      promises.shift().then(v => {
-        accum = _.merge(accum, v)
-        if (promises.length > 0) {
-          resolve(accum)
-        } else {
-          shift(accum)
-        }
-      }).catch(e => reject(e))
-    }
-    shift()
-  })
+  return runQueue([
+    ctl.connect(getUsername()),
+    audio.connect(getUsername())
+  ])
 }
 
 export function disconnect(e) {

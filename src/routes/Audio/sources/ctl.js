@@ -45,7 +45,7 @@ export function connect(username) {
     const connection = new autobahn.Connection({
       url,
       type: 'websocket',
-      realm: 'realm1'
+      realm: 'ctl'
     })
     connection.onopen = (session, details) => {
       setConnection(connection)

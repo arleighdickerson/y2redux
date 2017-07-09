@@ -3,8 +3,6 @@
 
 namespace console\modules\audio\controllers;
 
-use console\modules\audio\channels\ControlChannel;
-use console\modules\audio\channels\DataChannel;
 use ProxyManager\Factory\AccessInterceptorValueHolderFactory;
 use Ratchet;
 use React;
@@ -19,20 +17,10 @@ use yii\console\Controller;
  * @property Ratchet\ConnectionInterface[] $conns
  */
 class ServerController extends Controller {
-    private $_control;
-    private $_data;
-
-    public function init() {
-        parent::init();
-        $this->_data = new DataChannel();
-        $this->_control = new ControlChannel('realm1', loop());
-    }
-
     public function actionIndex() {
         $app = new Ratchet\App('localhost', 8889, '0.0.0.0', loop());
-        $app->route('/audio/ctl/', $this->_control->getComponent(), ['*']);
-        $app->route('/audio/data/', $this->_data->getComponent(), ['*']);
-
+        $app->route('/audio/data/', require(__DIR__ . '/../channels/data.php'), ['*']);
+        $app->route('/audio/ctl/', require(__DIR__ . '/../channels/ctl.php'), ['*']);
         $this->patchErrorHandler();
         loop()->run();
     }

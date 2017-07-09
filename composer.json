@@ -24,7 +24,9 @@
     "ocramius/proxy-manager": "^1.0",
     "react/stream": "@dev",
     "nubs/random-name-generator": "^2.1",
-    "voryx/thruway": "dev-master"
+    "voryx/thruway": "dev-master",
+    "voryx/wamppost": "^0.1.5",
+    "firebase/php-jwt": "^5.0"
   },
   "require-dev": {
     "yiisoft/yii2-debug": "*",
