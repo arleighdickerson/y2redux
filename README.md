@@ -1,7 +1,7 @@
 Yii2 React/Redux Isomorphic Boilerplate
 =======================================
 
-## [Demo](http://arleighdickerson.us)
+## [Demo](https://www.arleigh.io)
 
 
 Features
